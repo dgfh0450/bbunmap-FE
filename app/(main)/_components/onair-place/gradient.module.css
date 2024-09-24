@@ -1,0 +1,4 @@
+.gradient_bar {
+    background: linear-gradient(90deg, #D3F4C8 28.5%, #FF7373 100%);
+    transform: rotate(180deg);
+}
