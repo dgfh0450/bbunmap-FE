@@ -23,7 +23,7 @@ interface test { building: string, place: string, value: number }
 const fetchCategoryData = async (place: string
 ): Promise<test[]> => {
     const response = await fetch(
-        `http://localhost:3000/api/test`
+        process.env.NEXT_PUBLIC_API_INTERNAL_URL + `/api/test`
     );
     return response.json();
 };
