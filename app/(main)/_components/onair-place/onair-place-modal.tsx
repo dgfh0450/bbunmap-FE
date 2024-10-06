@@ -21,7 +21,7 @@ export default function OnAirPlaceModal() {
     const { isPlaceModalOpen, setIsPlaceModalOpen, handlePlaceModalOpen, selectedPlace, setSelectedPlace } = useOnAirModal();
     return (
         <div key={`${selectedPlace.place}-${selectedPlace.building}-modal`} className='fixed w-full max-w-[450px] h-[100vh] z-50 top-0 left-1/2 translate-x-[-50%] bg-black/[.06] flex items-center justify-center'>
-            <div className='w-[80%] h-[400px] relative rounded-[10px] bg-white p-4 flex flex-col justify-between'>
+            <div className='w-full mx-[15px] h-[400px] relative rounded-[10px] bg-white p-4 flex flex-col justify-between'>
                 {
                     {
                         0: <ResultPage page={page} setPage={setPage} />,
@@ -149,7 +149,9 @@ function RewardPage({ page, setPage }: PageProps) {
                 <p className='text-[14px] text-gray-500'>로그인하고 포인트를 받아가세요!</p>
             </div>
             <div className='flex flex-col'>
-                <button onClick={() => { }} className='w-full h-[50px] rounded-[7px] bg-[#FCD300] text-black font-bold'>3초만에 카카오 로그인</button>
+                <button onClick={() => { }} className='w-full h-[50px] rounded-[7px] bg-[#FEE500] text-black font-bold relative'>
+                    <Image src={'/kakao_logo.png'} width={22} height={22} alt='kakao logo' className='absolute left-[16px] top-[14px]' />
+                    3초만에 카카오 로그인</button>
             </div>
         </>
     )
