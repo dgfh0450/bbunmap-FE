@@ -19,11 +19,12 @@ export interface onairPlaceProps {
 }
 
 export default function OnAirPlaceCard({ placeName, buildingName, value, like }: onairPlaceProps) {
-    const { isPlaceModalOpen, setIsPlaceModalOpen, handlePlaceModalOpen, selectedPlace, setSelectedPlace } = useOnAirModal();
+    const { isPlaceModalOpen, setIsPlaceModalOpen, resetPlaceModal, selectedPlace, setSelectedPlace } = useOnAirModal();
 
     const handleModal = () => {
-        setSelectedPlace({ place: placeName, building: buildingName, value: value });
-        handlePlaceModalOpen();
+        console.log(isPlaceModalOpen)
+        setSelectedPlace({ place: placeName, building: buildingName, rating: value });
+        setIsPlaceModalOpen(!isPlaceModalOpen);
     }
 
     return (
