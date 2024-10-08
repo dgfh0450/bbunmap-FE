@@ -1,5 +1,5 @@
 "use client"
-import React, { Dispatch, SetStateAction, useState } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { onairPlaceProps } from './onair-place-card';
 import { useOnAirModal } from '@/hooks/useOnAirModal';
 import { OnAirProgressInput } from './onair-progress';
@@ -14,19 +14,31 @@ import SpaceEnough from '@/public/onAir/space_enough.svg';
 import SpacePlenty from '@/public/onAir/space_plenty.svg';
 import { ArrowRight } from "lucide-react";
 import Image from 'next/image';
+import { signIn, useSession } from 'next-auth/react';
+import { useStoreLoginState } from '@/hooks/useStoreLoginState';
+import { useRouter } from 'next/navigation';
 
 export default function OnAirPlaceModal() {
-    const [rate, setRate] = useState<number>(50);
+    const [rating, setRating] = useState<number>(50);
     const [page, setPage] = useState<number>(0);
     const { isPlaceModalOpen, setIsPlaceModalOpen, handlePlaceModalOpen, selectedPlace, setSelectedPlace } = useOnAirModal();
+
+    const { isSaving, setIsSaving, state, setState, resetState } = useStoreLoginState();
+
+    useEffect(() => {
+        if (isSaving) {
+            setPage(state['page']);
+        }
+    }, [])
+
     return (
         <div key={`${selectedPlace.place}-${selectedPlace.building}-modal`} className='fixed w-full max-w-[450px] h-[100vh] z-50 top-0 left-1/2 translate-x-[-50%] bg-black/[.06] flex items-center justify-center'>
             <div className='w-full mx-[15px] h-[400px] relative rounded-[10px] bg-white p-4 flex flex-col justify-between'>
                 {
                     {
                         0: <ResultPage page={page} setPage={setPage} />,
-                        1: <VotingPage page={page} setPage={setPage} />,
-                        2: <RewardPage page={page} setPage={setPage} />
+                        1: <VotingPage page={page} setPage={setPage} rating={rating} setRating={setRating} />,
+                        2: <RewardPage page={page} setPage={setPage} rating={rating} setRating={setRating} />
                     }[page]
                 }
             </div>
@@ -39,6 +51,7 @@ interface PageProps {
     page: number;
     setPage: Dispatch<SetStateAction<number>>;
 }
+
 
 function ResultPage({ page, setPage }: PageProps) {
     const { isPlaceModalOpen, setIsPlaceModalOpen, handlePlaceModalOpen, selectedPlace, setSelectedPlace } = useOnAirModal();
@@ -83,20 +96,26 @@ function ResultPage({ page, setPage }: PageProps) {
     )
 }
 
-function VotingSlider() {
+function VotingSlider({ rating, setRating }: { rating: number, setRating: Dispatch<SetStateAction<number>> }) {
     const [moved, setMoved] = useState<boolean>(false);
 
     return (
         <div className='w-full h-[15px] relative mt-2 mb-2 flex items-center'>
             {!moved && <ArrowRight className='absolute left-1/3 h-4 l-4 z-20 stroke-white rotate-180' />}
-            <input type='range' min={0} max={100} step={1} onChange={(e) => { setMoved(true) }}
+            <input type='range' value={rating} min={0} max={100} step={1} onChange={(e) => { setMoved(true); setRating(Number(e.target.value)) }}
                 className={`${styles.gradient_bar} absolute top-0 left-0 w-full h-[15px] border border-[#E4E4E4] rounded-full voting-slider`} />
             {!moved && <ArrowRight className='absolute right-1/3 h-4 l-4 z-20 stroke-white' />}
         </div>
     )
 }
 
-function VotingPage({ page, setPage }: PageProps) {
+interface PagePropsWithRating extends PageProps {
+    rating: number;
+    setRating: Dispatch<SetStateAction<number>>;
+}
+
+
+function VotingPage({ page, setPage, rating, setRating }: PagePropsWithRating) {
     const { isPlaceModalOpen, setIsPlaceModalOpen, handlePlaceModalOpen, selectedPlace, setSelectedPlace } = useOnAirModal();
 
     const handleVote = async () => {
@@ -116,7 +135,7 @@ function VotingPage({ page, setPage }: PageProps) {
             </div>
             <div className='relative'>
                 <div className='w-full h-[37px]' />
-                <VotingSlider />
+                <VotingSlider rating={rating} setRating={setRating} />
                 <div className='flex justify-between'>
                     <span className='text-[13px]'>다 차 있어요</span>
                     <span className='text-[13px]'>빈 자리 많아요</span>
@@ -132,8 +151,36 @@ function VotingPage({ page, setPage }: PageProps) {
 }
 
 
-function RewardPage({ page, setPage }: PageProps) {
+function RewardPage({ page, setPage, rating, setRating }: PagePropsWithRating) {
     const { isPlaceModalOpen, setIsPlaceModalOpen, handlePlaceModalOpen, selectedPlace, setSelectedPlace } = useOnAirModal();
+    const { data: session, status } = useSession();
+    const { isSaving, setIsSaving, state, setState, resetState } = useStoreLoginState();
+    const router = useRouter();
+
+    const handleLogin = () => {
+        if (status != 'unauthenticated') return;
+        setIsSaving(true);
+        setState({ selectedPlace: selectedPlace, page: page, rating: rating });
+        signIn('kakao');
+    }
+
+    const handlePoint = async () => {
+        router.push('/my')
+    }
+
+    const voting = async (rating: number) => {
+        alert(`방금 투표한 점수 : ${rating}`)
+    }
+
+    useEffect(() => {
+        if (isSaving) {
+            voting(state['rating']);
+            resetState();
+        }
+        else if (status == 'authenticated') {
+            voting(rating);
+        }
+    }, [])
 
     return (
         <>
@@ -143,16 +190,23 @@ function RewardPage({ page, setPage }: PageProps) {
                 </div>
             </div>
             <Image src={'/onAir/Reward.png'} alt='Reward Image' width={204} height={189} className='self-center' />
-
             <div className='w-full flex flex-col items-center'>
                 <p className='text-[26px] font-semibold mb-3'>10P 획득</p>
-                <p className='text-[14px] text-gray-500'>로그인하고 포인트를 받아가세요!</p>
+                <p className='text-[14px] text-gray-500'>{status == 'authenticated' ? '마이페이지에서 포인트를 확인할 수 있어요' : '로그인하고 포인트를 받아가세요!'}</p>
             </div>
             <div className='flex flex-col'>
-                <button onClick={() => { }} className='w-full h-[50px] rounded-[7px] bg-[#FEE500] text-black font-bold relative'>
-                    <Image src={'/kakao_logo.png'} width={22} height={22} alt='kakao logo' className='absolute left-[16px] top-[14px]' />
-                    3초만에 카카오 로그인</button>
+                {
+                    status == 'authenticated' ?
+                        <button onClick={handlePoint} className='w-full h-[50px] rounded-[7px] text-[#FFA425] font-bold relative'>
+                            포인트 확인하러 가기
+                        </button>
+                        :
+                        <button onClick={handleLogin} className='w-full h-[50px] rounded-[7px] bg-[#FEE500] text-black font-bold relative'>
+                            <Image src={'/kakao_logo.png'} width={22} height={22} alt='kakao logo' className='absolute left-[16px] top-[14px]' />
+                            3초만에 카카오 로그인
+                        </button>
+                }
             </div>
         </>
     )
-}
+} 
