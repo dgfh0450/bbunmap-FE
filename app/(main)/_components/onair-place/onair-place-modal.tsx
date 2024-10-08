@@ -21,7 +21,7 @@ import { useRouter } from 'next/navigation';
 export default function OnAirPlaceModal() {
     const [rating, setRating] = useState<number>(50);
     const [page, setPage] = useState<number>(0);
-    const { isPlaceModalOpen, setIsPlaceModalOpen, handlePlaceModalOpen, selectedPlace, setSelectedPlace } = useOnAirModal();
+    const { isPlaceModalOpen, setIsPlaceModalOpen, resetPlaceModal, selectedPlace, setSelectedPlace } = useOnAirModal();
 
     const { isSaving, setIsSaving, state, setState, resetState } = useStoreLoginState();
 
@@ -54,13 +54,13 @@ interface PageProps {
 
 
 function ResultPage({ page, setPage }: PageProps) {
-    const { isPlaceModalOpen, setIsPlaceModalOpen, handlePlaceModalOpen, selectedPlace, setSelectedPlace } = useOnAirModal();
+    const { isPlaceModalOpen, setIsPlaceModalOpen, resetPlaceModal, selectedPlace, setSelectedPlace } = useOnAirModal();
     return (
         <>
             <div className='w-full'>
                 <div className='h-[40px] flex items-center justify-between mb-4'>
-                    <button className='w-[30px] h-[30px] flex items-center justify-center' onClick={handlePlaceModalOpen}><StarBlank /></button>
-                    <button className='w-[22px] h-[22px] flex items-center justify-center' onClick={handlePlaceModalOpen}><Close /></button>
+                    <button className='w-[30px] h-[30px] flex items-center justify-center' onClick={resetPlaceModal}><StarBlank /></button>
+                    <button className='w-[22px] h-[22px] flex items-center justify-center' onClick={resetPlaceModal}><Close /></button>
                 </div>
                 <div>
                     <p className='text-[21px] font-semibold'>{selectedPlace.building}</p>
@@ -70,13 +70,13 @@ function ResultPage({ page, setPage }: PageProps) {
             <div className='relative'>
                 {(() => {
                     switch (true) {
-                        case selectedPlace.value <= 20:
+                        case selectedPlace.rating <= 20:
                             return <SpaceNone />;
-                        case selectedPlace.value <= 40:
+                        case selectedPlace.rating <= 40:
                             return <SpaceLow className='relative left-[25%] translate-x-[-50%]' />;
-                        case selectedPlace.value <= 60:
+                        case selectedPlace.rating <= 60:
                             return <SpaceNormal className='relative left-[50%] translate-x-[-50%]' />;
-                        case selectedPlace.value <= 80:
+                        case selectedPlace.rating <= 80:
                             return <SpaceEnough className='relative left-[75%] translate-x-[-50%]' />;
                         default:
                             return <SpacePlenty className='relative left-[100%] translate-x-[-100%]' />;
@@ -90,7 +90,7 @@ function ResultPage({ page, setPage }: PageProps) {
             </div>
             <div className='flex flex-col'>
                 <button onClick={() => setPage(1)} className='w-full h-[50px] rounded-[7px] bg-[#FF2B53] text-white font-bold mb-0.5'>투표하고 10P 받기</button>
-                <button onClick={handlePlaceModalOpen} className='w-full h-[50px] text-[13px]' style={{ textDecoration: 'underline' }}>다른 공간 추천받기</button>
+                <button onClick={resetPlaceModal} className='w-full h-[50px] text-[13px]' style={{ textDecoration: 'underline' }}>다른 공간 추천받기</button>
             </div>
         </>
     )
@@ -116,7 +116,7 @@ interface PagePropsWithRating extends PageProps {
 
 
 function VotingPage({ page, setPage, rating, setRating }: PagePropsWithRating) {
-    const { isPlaceModalOpen, setIsPlaceModalOpen, handlePlaceModalOpen, selectedPlace, setSelectedPlace } = useOnAirModal();
+    const { isPlaceModalOpen, setIsPlaceModalOpen, resetPlaceModal, selectedPlace, setSelectedPlace } = useOnAirModal();
 
     const handleVote = async () => {
         setPage(page + 1);
@@ -126,7 +126,7 @@ function VotingPage({ page, setPage, rating, setRating }: PagePropsWithRating) {
         <>
             <div className='w-full'>
                 <div className='h-[40px] flex items-center justify-end mb-4'>
-                    <button className='w-[22px] h-[22px] flex items-center justify-center' onClick={handlePlaceModalOpen}><Close /></button>
+                    <button className='w-[22px] h-[22px] flex items-center justify-center' onClick={resetPlaceModal}><Close /></button>
                 </div>
                 <div>
                     <p className='text-[21px] font-semibold'>빈 자리가 많이 있나요?</p>
@@ -152,7 +152,7 @@ function VotingPage({ page, setPage, rating, setRating }: PagePropsWithRating) {
 
 
 function RewardPage({ page, setPage, rating, setRating }: PagePropsWithRating) {
-    const { isPlaceModalOpen, setIsPlaceModalOpen, handlePlaceModalOpen, selectedPlace, setSelectedPlace } = useOnAirModal();
+    const { isPlaceModalOpen, setIsPlaceModalOpen, resetPlaceModal, selectedPlace, setSelectedPlace } = useOnAirModal();
     const { data: session, status } = useSession();
     const { isSaving, setIsSaving, state, setState, resetState } = useStoreLoginState();
     const router = useRouter();
@@ -165,6 +165,7 @@ function RewardPage({ page, setPage, rating, setRating }: PagePropsWithRating) {
     }
 
     const handlePoint = async () => {
+        resetPlaceModal();
         router.push('/my')
     }
 
@@ -186,7 +187,7 @@ function RewardPage({ page, setPage, rating, setRating }: PagePropsWithRating) {
         <>
             <div className='absolute top-[16px] right-[16px]'>
                 <div className='h-[40px] flex items-center justify-end'>
-                    <button className='w-[22px] h-[22px] flex items-center justify-center' onClick={handlePlaceModalOpen}><Close /></button>
+                    <button className='w-[22px] h-[22px] flex items-center justify-center' onClick={resetPlaceModal}><Close /></button>
                 </div>
             </div>
             <Image src={'/onAir/Reward.png'} alt='Reward Image' width={204} height={189} className='self-center' />
