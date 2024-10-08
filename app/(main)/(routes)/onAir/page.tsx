@@ -13,6 +13,7 @@ import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carouse
 import OnAirPlaceCard from "../../_components/onair-place/onair-place-card";
 import { useOnAirModal } from "@/hooks/useOnAirModal";
 import OnAirPlaceModal from "../../_components/onair-place/onair-place-modal";
+import { useStoreLoginState } from "@/hooks/useStoreLoginState";
 
 interface test { building: string, place: string, value: number }
 
@@ -34,6 +35,8 @@ const typeList = ['카페', '라운지']
 const OnAir = () => {
     const [selectedCategory, setSelectedCategory] = useState<string>('');
     const { isPlaceModalOpen, setIsPlaceModalOpen, handlePlaceModalOpen, selectedPlace, setSelectedPlace } = useOnAirModal();
+    const { isSaving, setIsSaving, state, setState, resetState } = useStoreLoginState();
+
     const { data, error, isLoading } = useQuery<test[]>({
         queryKey: ['buildingCategory', selectedCategory],
         queryFn: () => fetchCategoryData(selectedCategory),
@@ -47,6 +50,12 @@ const OnAir = () => {
         else setSelectedCategory(value);
     }
 
+    useEffect(() => {
+        if (isSaving) {
+            handlePlaceModalOpen();
+            setSelectedPlace(state['selectedPlace'])
+        }
+    }, [])
 
     return (
         <div className="w-full max-w-[450px] h-full left-0 top-0 py-[15px] relative flex flex-col justify-start items-center mb-[68px]" >
