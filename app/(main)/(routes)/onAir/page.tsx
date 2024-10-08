@@ -34,7 +34,7 @@ const typeList = ['카페', '라운지']
 
 const OnAir = () => {
     const [selectedCategory, setSelectedCategory] = useState<string>('');
-    const { isPlaceModalOpen, setIsPlaceModalOpen, handlePlaceModalOpen, selectedPlace, setSelectedPlace } = useOnAirModal();
+    const { isPlaceModalOpen, setIsPlaceModalOpen, resetPlaceModal, selectedPlace, setSelectedPlace } = useOnAirModal();
     const { isSaving, setIsSaving, state, setState, resetState } = useStoreLoginState();
 
     const { data, error, isLoading } = useQuery<test[]>({
@@ -52,7 +52,7 @@ const OnAir = () => {
 
     useEffect(() => {
         if (isSaving) {
-            handlePlaceModalOpen();
+            setIsPlaceModalOpen(true);
             setSelectedPlace(state['selectedPlace'])
         }
     }, [])
