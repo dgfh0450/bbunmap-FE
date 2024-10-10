@@ -14,19 +14,14 @@ import OnAirPlaceCard from "../../_components/onair-place/onair-place-card";
 import { useOnAirModal } from "@/hooks/useOnAirModal";
 import OnAirPlaceModal from "../../_components/onair-place/onair-place-modal";
 import { useStoreLoginState } from "@/hooks/useStoreLoginState";
+import Request from "@/lib/fetch";
+import { TypesOnAirPlace } from "./onAir";
 
-interface test { building: string, place: string, value: number }
-
-// const response = await fetch(
-// `${process.env.NEXT_PUBLIC_API_SERVER_MAIN_URL}/facilityList?buildingName=${buildingName}`
-// );
-// return response.json();
 const fetchCategoryData = async (place: string
-): Promise<test[]> => {
-    const response = await fetch(
-        process.env.NEXT_PUBLIC_API_INTERNAL_URL + `/api/test`
-    );
-    return response.json();
+): Promise<TypesOnAirPlace[]> => {
+    const request = new Request();
+    const response = await request.get('/api/realTime/places');
+    return response;
 };
 
 const buildingList = ['SK미래관', '과학도서관', '백주년기념관', '중앙광장 지하']
@@ -37,12 +32,13 @@ const OnAir = () => {
     const { isPlaceModalOpen, setIsPlaceModalOpen, resetPlaceModal, selectedPlace, setSelectedPlace } = useOnAirModal();
     const { isSaving, setIsSaving, state, setState, resetState } = useStoreLoginState();
 
-    const { data, error, isLoading } = useQuery<test[]>({
+    const { data: places, error, isLoading } = useQuery<TypesOnAirPlace[]>({
         queryKey: ['buildingCategory', selectedCategory],
         queryFn: () => fetchCategoryData(selectedCategory),
         staleTime: 300000,
         refetchInterval: 300000,
     });
+
 
     const handleCategory = (e: MouseEvent<HTMLButtonElement>) => {
         const value = e.currentTarget.value;
@@ -107,36 +103,13 @@ const OnAir = () => {
                 </div>
                 <div className="w-full flex flex-col justify-start items-center" >
                     <p className="w-full font-semibold text-xl text-black mb-5 mt-8 ml-[3px]">남은 자리를 확인해보세요</p>
-                    {data && data.map((data: test, index: number) => {
-                        return (
-                            <OnAirPlaceCard key={index} value={data.value} placeName={data.place} buildingName={data.building} />
-                        )
-                    })}
-                    {data && data.map((data: test, index: number) => {
-                        return (
-                            <OnAirPlaceCard key={index} value={data.value} placeName={data.place} buildingName={data.building} />
-                        )
-                    })}
-                    {data && data.map((data: test, index: number) => {
-                        return (
-                            <OnAirPlaceCard key={index} value={data.value} placeName={data.place} buildingName={data.building} />
-                        )
-                    })}
-                    {data && data.map((data: test, index: number) => {
-                        return (
-                            <OnAirPlaceCard key={index} value={data.value} placeName={data.place} buildingName={data.building} />
-                        )
-                    })}
-                    {data && data.map((data: test, index: number) => {
-                        return (
-                            <OnAirPlaceCard key={index} value={data.value} placeName={data.place} buildingName={data.building} />
-                        )
-                    })}
-                    {data && data.map((data: test, index: number) => {
-                        return (
-                            <OnAirPlaceCard key={index} value={data.value} placeName={data.place} buildingName={data.building} />
-                        )
-                    })}
+                    {
+                        places && places.map((data: TypesOnAirPlace, index: number) => {
+                            return (
+                                <OnAirPlaceCard key={index} {...data} />
+                            )
+                        })
+                    }
 
                 </div>
                 {isPlaceModalOpen &&
