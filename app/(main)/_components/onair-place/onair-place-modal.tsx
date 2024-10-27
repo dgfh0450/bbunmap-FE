@@ -1,8 +1,6 @@
 "use client"
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { onairPlaceProps } from './onair-place-card';
 import { useOnAirModal } from '@/hooks/useOnAirModal';
-import { OnAirProgressInput } from './onair-progress';
 import Close from "@/public/icons/common/close.svg";
 import StarBlank from "@/public/icons/common/star_blank.svg";
 import styles from './gradient.module.css';
@@ -19,7 +17,7 @@ import { useStoreLoginState } from '@/hooks/useStoreLoginState';
 import { useRouter } from 'next/navigation';
 
 export default function OnAirPlaceModal() {
-    const [rating, setRating] = useState<number>(50);
+    const [vote, setvote] = useState<number>(50);
     const [page, setPage] = useState<number>(0);
     const { isPlaceModalOpen, setIsPlaceModalOpen, resetPlaceModal, selectedPlace, setSelectedPlace } = useOnAirModal();
 
@@ -32,13 +30,13 @@ export default function OnAirPlaceModal() {
     }, [])
 
     return (
-        <div key={`${selectedPlace.place}-${selectedPlace.building}-modal`} className='fixed w-full max-w-[450px] h-[100vh] z-50 top-0 left-1/2 translate-x-[-50%] bg-black/[.06] flex items-center justify-center'>
+        <div className='fixed w-full max-w-[450px] h-[100vh] z-50 top-0 left-1/2 translate-x-[-50%] bg-black/[.06] flex items-center justify-center'>
             <div className='w-full mx-[15px] h-[400px] relative rounded-[10px] bg-white p-4 flex flex-col justify-between'>
                 {
                     {
                         0: <ResultPage page={page} setPage={setPage} />,
-                        1: <VotingPage page={page} setPage={setPage} rating={rating} setRating={setRating} />,
-                        2: <RewardPage page={page} setPage={setPage} rating={rating} setRating={setRating} />
+                        1: <VotingPage page={page} setPage={setPage} vote={vote} setvote={setvote} />,
+                        2: <RewardPage page={page} setPage={setPage} vote={vote} setvote={setvote} />
                     }[page]
                 }
             </div>
@@ -63,20 +61,20 @@ function ResultPage({ page, setPage }: PageProps) {
                     <button className='w-[22px] h-[22px] flex items-center justify-center' onClick={resetPlaceModal}><Close /></button>
                 </div>
                 <div>
-                    <p className='text-[21px] font-semibold'>{selectedPlace.building}</p>
-                    <p className='text-[13px] text-gray-500'>{selectedPlace.place}</p>
+                    <p className='text-[21px] font-semibold'>{selectedPlace.buildingName} {selectedPlace.placeName}</p>
+                    <p className='text-[13px] text-gray-500'>{selectedPlace.buildingName} {selectedPlace.floor}층</p>
                 </div>
             </div>
             <div className='relative'>
                 {(() => {
                     switch (true) {
-                        case selectedPlace.rating <= 20:
+                        case selectedPlace.vote <= 20:
                             return <SpaceNone />;
-                        case selectedPlace.rating <= 40:
+                        case selectedPlace.vote <= 40:
                             return <SpaceLow className='relative left-[25%] translate-x-[-50%]' />;
-                        case selectedPlace.rating <= 60:
+                        case selectedPlace.vote <= 60:
                             return <SpaceNormal className='relative left-[50%] translate-x-[-50%]' />;
-                        case selectedPlace.rating <= 80:
+                        case selectedPlace.vote <= 80:
                             return <SpaceEnough className='relative left-[75%] translate-x-[-50%]' />;
                         default:
                             return <SpacePlenty className='relative left-[100%] translate-x-[-100%]' />;
@@ -96,26 +94,26 @@ function ResultPage({ page, setPage }: PageProps) {
     )
 }
 
-function VotingSlider({ rating, setRating }: { rating: number, setRating: Dispatch<SetStateAction<number>> }) {
+function VotingSlider({ vote, setvote }: { vote: number, setvote: Dispatch<SetStateAction<number>> }) {
     const [moved, setMoved] = useState<boolean>(false);
 
     return (
         <div className='w-full h-[15px] relative mt-2 mb-2 flex items-center'>
             {!moved && <ArrowRight className='absolute left-1/3 h-4 l-4 z-20 stroke-white rotate-180' />}
-            <input type='range' value={rating} min={0} max={100} step={1} onChange={(e) => { setMoved(true); setRating(Number(e.target.value)) }}
+            <input type='range' value={vote} min={0} max={100} step={1} onChange={(e) => { setMoved(true); setvote(Number(e.target.value)) }}
                 className={`${styles.gradient_bar} absolute top-0 left-0 w-full h-[15px] border border-[#E4E4E4] rounded-full voting-slider`} />
             {!moved && <ArrowRight className='absolute right-1/3 h-4 l-4 z-20 stroke-white' />}
         </div>
     )
 }
 
-interface PagePropsWithRating extends PageProps {
-    rating: number;
-    setRating: Dispatch<SetStateAction<number>>;
+interface PagePropsWithvote extends PageProps {
+    vote: number;
+    setvote: Dispatch<SetStateAction<number>>;
 }
 
 
-function VotingPage({ page, setPage, rating, setRating }: PagePropsWithRating) {
+function VotingPage({ page, setPage, vote, setvote }: PagePropsWithvote) {
     const { isPlaceModalOpen, setIsPlaceModalOpen, resetPlaceModal, selectedPlace, setSelectedPlace } = useOnAirModal();
 
     const handleVote = async () => {
@@ -130,12 +128,12 @@ function VotingPage({ page, setPage, rating, setRating }: PagePropsWithRating) {
                 </div>
                 <div>
                     <p className='text-[21px] font-semibold'>빈 자리가 많이 있나요?</p>
-                    <p className='text-[13px] text-gray-500'>{selectedPlace.place}</p>
+                    <p className='text-[13px] text-gray-500'>{selectedPlace.buildingName} {selectedPlace.floor}층</p>
                 </div>
             </div>
             <div className='relative'>
                 <div className='w-full h-[37px]' />
-                <VotingSlider rating={rating} setRating={setRating} />
+                <VotingSlider vote={vote} setvote={setvote} />
                 <div className='flex justify-between'>
                     <span className='text-[13px]'>다 차 있어요</span>
                     <span className='text-[13px]'>빈 자리 많아요</span>
@@ -151,7 +149,7 @@ function VotingPage({ page, setPage, rating, setRating }: PagePropsWithRating) {
 }
 
 
-function RewardPage({ page, setPage, rating, setRating }: PagePropsWithRating) {
+function RewardPage({ page, setPage, vote, setvote }: PagePropsWithvote) {
     const { isPlaceModalOpen, setIsPlaceModalOpen, resetPlaceModal, selectedPlace, setSelectedPlace } = useOnAirModal();
     const { data: session, status } = useSession();
     const { isSaving, setIsSaving, state, setState, resetState } = useStoreLoginState();
@@ -160,7 +158,7 @@ function RewardPage({ page, setPage, rating, setRating }: PagePropsWithRating) {
     const handleLogin = () => {
         if (status != 'unauthenticated') return;
         setIsSaving(true);
-        setState({ selectedPlace: selectedPlace, page: page, rating: rating });
+        setState({ selectedPlace: selectedPlace, page: page, vote: vote });
         signIn('kakao');
     }
 
@@ -169,17 +167,17 @@ function RewardPage({ page, setPage, rating, setRating }: PagePropsWithRating) {
         router.push('/my')
     }
 
-    const voting = async (rating: number) => {
-        alert(`방금 투표한 점수 : ${rating}`)
+    const voting = async (vote: number) => {
+        // alert(`방금 투표한 점수 : ${vote}`)
     }
 
     useEffect(() => {
         if (isSaving) {
-            voting(state['rating']);
+            voting(state['vote']);
             resetState();
         }
         else if (status == 'authenticated') {
-            voting(rating);
+            voting(vote);
         }
     }, [])
 
