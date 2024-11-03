@@ -1,3 +1,4 @@
+import Request from "@/lib/fetch";
 import { User } from "next-auth";
 import NextAuth from "next-auth/next";
 import KakaoProvider from "next-auth/providers/kakao";
@@ -17,22 +18,32 @@ const authOptions = {
         }),
     ],
     callbacks: {
-
-
         async signIn({ user, account, profile }) {
-            // const response = await fetch("http://localhost:3000/api/test", {
-            //     method: 'POST',
-            //     headers: {
-            //         'Content-Type': 'application/json',
-            //     },
-            //     body: JSON.stringify({
-            //         user: user,
-            //         account: account,
-            //         profile: profile,
-            //     }),
-            // });
+            const id = user.id;
+            const nickName = user.name;
+            const email = user.email;
+            const kakaoAccessToken = account.access_token;
 
-            return true;
+            const request = new Request();
+
+            try {
+                const response = await request.post('/api/signIn', {
+                    kakaoAccessToken: kakaoAccessToken,
+                    email: email,
+                    id: id,
+                    nickName: nickName
+                });
+
+                const { accessToken, refreshToken } = response;
+                user.accessToken = accessToken;
+                user.refreshToken = refreshToken;
+
+                return true;
+            }
+            catch (err) {
+                console.log(err);
+                return false;
+            }
         },
 
         /**
@@ -43,13 +54,18 @@ const authOptions = {
 
 
         async jwt({ token, account, user }) {
-            // 초기 로그인시 User 정보를 가공해 반환
-            if (account && user) {
-                token.access_token = account.access_token;
-                token.accessTokenExpires = account.expires_at;
-                token.refreshToken = account.refresh_token;
-                token.user = user;
+            console.error(account, user);
+            if (user) {
+                // 초기 로그인 시에만 token에 accessToken과 refreshToken 추가
+                token.accessToken = user.accessToken;
+                token.refreshToken = user.refreshToken;
             }
+            else {
+                token.accessToken = 'user.accessToken';
+                token.refreshToken = 'user.refreshToken';
+            }
+            // console.log('jwt', token);
+            console.log(token);
             return token;
         },
 
@@ -60,9 +76,10 @@ const authOptions = {
          * JWT 토큰의 정보를 Session에 유지 시킨다.
          */
         async session({ session, token }) {
-            if (token.user) {
-                session.user = token.user;
-            }
+            session.accessToken = token.accessToken
+            session.refreshToken = token.refreshToken
+
+            console.error('useSession called', session)
             return session;
         }
 

@@ -1,10 +1,13 @@
 export default class Request {
-    constructor() {
+    accessToken?: string;
 
+    constructor(accessToken?: string) {
+        this.accessToken = accessToken;
     }
 
     fetch = async (path: string, method: 'GET' | 'POST', body?: any, header: Record<string, any> = {}) => {
-        const token = localStorage.getItem('access_token');
+
+        const token = this.accessToken;
         let authorization;
         if (token == null || token == undefined)
             authorization = 'Bearer '
@@ -12,9 +15,9 @@ export default class Request {
             authorization = `Bearer ${token}`;
 
         const url = process.env.NEXT_PUBLIC_API_SERVER_MAIN_URL + path;
-
+        // const url = 'http://localhost:3000' + path;
         const newHeader = {
-            // Authorization: authorization,
+            Authorization: authorization,
             'Content-Type': 'application/json',
             ...header
         };
@@ -39,8 +42,11 @@ export default class Request {
 
     get = async (path: string, params?: Record<string, any>, header?: Record<string, any>) => {
         const queryURL = new URLSearchParams(params).toString();
-
         const newPath = path + `?${queryURL} `;
         return await this.fetch(params ? newPath : path, 'GET', {}, header);
+    }
+
+    post = async (path: string, body?: Record<string, any>, header?: Record<string, any>) => {
+        return await this.fetch(path, 'POST', body, header)
     }
 }
