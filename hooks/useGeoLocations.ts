@@ -1,37 +1,70 @@
 import { useState, useEffect } from "react";
 
 interface ILocation {
-  latitude: number;
-  longitude: number;
+    latitude: number;
+    longitude: number;
 }
 
-export const useGeoLocation = (options = {}) => {
-  const [location, setLocation] = useState<ILocation>();
-  const [error, setError] = useState("");
+export const useGeoLocation = (options?: PositionOptions) => {
+    const [location, setLocation] = useState<ILocation>();
+    const [error, setError] = useState("");
 
-  const handleSuccess = (pos: GeolocationPosition) => {
-    const { latitude, longitude } = pos.coords;
+    const handleSuccess = (pos: GeolocationPosition) => {
+        const { latitude, longitude } = pos.coords;
 
-    setLocation({
-      latitude,
-      longitude,
-    });
-  };
+        setLocation({
+            latitude,
+            longitude,
+        });
+    };
 
-  const handleError = (err: GeolocationPositionError) => {
-    setError(err.message);
-  };
+    const handleError = (err: GeolocationPositionError) => {
+        setError(err.message);
+    };
 
-  useEffect(() => {
-    const { geolocation } = navigator;
+    useEffect(() => {
+        const { geolocation } = navigator;
 
-    if (!geolocation) {
-      setError("Geolocation is not supported.");
-      return;
+        if (!geolocation) {
+            setError("Geolocation is not supported.");
+            return;
+        }
+
+        geolocation.getCurrentPosition(handleSuccess, handleError, options);
+    }, [options]);
+
+    return { location, error };
+};
+
+export const useWatchPosition = (options?: PositionOptions) => {
+    const [location, setLocation] = useState<ILocation>();
+    const [error, setError] = useState<string>("");
+
+    const handleSuccess = (pos: GeolocationPosition) => {
+        const { latitude, longitude } = pos.coords;
+
+        setLocation({
+            latitude,
+            longitude,
+        });
     }
 
-    geolocation.getCurrentPosition(handleSuccess, handleError, options);
-  }, [options]);
+    const handleError = (err: GeolocationPositionError) => {
+        setError(err.message);
+    };
 
-  return { location, error };
-};
+
+    useEffect(() => {
+        const { geolocation } = navigator;
+
+        if (!geolocation) {
+            setError("Geolocation is not supported.");
+            return;
+        }
+
+        geolocation.watchPosition(handleSuccess, handleError, options)
+    }, [options]);
+
+    return { location, error };
+
+}
