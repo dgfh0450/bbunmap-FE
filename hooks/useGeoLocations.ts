@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 
-interface ILocation {
+export interface ILocation {
     latitude: number;
     longitude: number;
 }
 
 export const useGeoLocation = (options?: PositionOptions) => {
-    const [location, setLocation] = useState<ILocation>();
+    const [location, setLocation] = useState<ILocation>({ latitude: 37.5665, longitude: 126.9780 });
     const [error, setError] = useState("");
 
     const handleSuccess = (pos: GeolocationPosition) => {
@@ -37,7 +37,7 @@ export const useGeoLocation = (options?: PositionOptions) => {
 };
 
 export const useWatchPosition = (options?: PositionOptions) => {
-    const [location, setLocation] = useState<ILocation>();
+    const [location, setLocation] = useState<ILocation>({ latitude: 37.5665, longitude: 126.9780 });
     const [error, setError] = useState<string>("");
 
     const handleSuccess = (pos: GeolocationPosition) => {
