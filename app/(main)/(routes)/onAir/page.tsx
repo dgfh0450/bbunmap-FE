@@ -17,6 +17,7 @@ import { useStoreLoginState } from "@/hooks/useStoreLoginState";
 import Request from "@/lib/fetch";
 import { TypesOnAirPlace } from "./onAir";
 
+
 const fetchCategoryData = async (place: string
 ): Promise<TypesOnAirPlace[]> => {
     const request = new Request();
