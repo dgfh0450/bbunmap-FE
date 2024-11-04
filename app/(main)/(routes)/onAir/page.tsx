@@ -17,34 +17,44 @@ import { useStoreLoginState } from "@/hooks/useStoreLoginState";
 import Request from "@/lib/fetch";
 import { TypesOnAirPlace } from "./onAir";
 
+type TypesBuildingFilterType = 'buildingName' | 'type';
 
-const fetchCategoryData = async (place: string
+type TypesBuildingFilter = {
+    type: TypesBuildingFilterType;
+    value: string;
+}
+
+const fetchCategoryData = (filterType: TypesBuildingFilter | undefined
 ): Promise<TypesOnAirPlace[]> => {
     const request = new Request();
-    const response = await request.get('/api/realTime/places');
-    return response;
+    if (filterType === undefined) {
+        return request.get('/api/realTime/places');
+    }
+    else {
+        return request.get(`/api/realTime/places?${filterType.type}=${filterType.value}`);
+    }
 };
 
 const buildingList = ['SK미래관', '과학도서관', '백주년기념관', '중앙광장 지하']
 const typeList = ['카페', '라운지']
 
 const OnAir = () => {
-    const [selectedCategory, setSelectedCategory] = useState<string>('');
+    const [selectedCategory, setSelectedCategory] = useState<TypesBuildingFilter | undefined>();
     const { isPlaceModalOpen, setIsPlaceModalOpen, resetPlaceModal, selectedPlace, setSelectedPlace } = useOnAirModal();
     const { isSaving, setIsSaving, state, setState, resetState } = useStoreLoginState();
 
     const { data: places, error, isLoading } = useQuery<TypesOnAirPlace[]>({
-        queryKey: ['buildingCategory', selectedCategory],
+        queryKey: ['buildingCategory', selectedCategory?.value],
         queryFn: () => fetchCategoryData(selectedCategory),
         staleTime: 300000,
         refetchInterval: 300000,
     });
 
 
-    const handleCategory = (e: MouseEvent<HTMLButtonElement>) => {
+    const handleCategory = (e: MouseEvent<HTMLButtonElement>, type: TypesBuildingFilterType) => {
         const value = e.currentTarget.value;
-        if (value == selectedCategory) setSelectedCategory('');
-        else setSelectedCategory(value);
+        if (value == selectedCategory?.value) setSelectedCategory(undefined);
+        else setSelectedCategory({ type: type, value: value });
     }
 
     useEffect(() => {
@@ -74,8 +84,8 @@ const OnAir = () => {
                         <CarouselContent>
                             {buildingList.map((data, index) => (
                                 <CarouselItem className="basis-auto" key={index}>
-                                    <button value={data} onClick={handleCategory} className={`flex items-center border px-[13px] py-[8px] rounded-full border-gray-100 text-gray-400 text-[13px] ${selectedCategory == data && 'bg-[black]'}`} >
-                                        {data} {selectedCategory == data && <Image className="ml-1.5" src={'/onAir/close.svg'} width={15} height={15} alt='disable' />}
+                                    <button value={data} onClick={(e) => handleCategory(e, 'buildingName')} className={`flex items-center border px-[13px] py-[8px] rounded-full border-gray-100 text-gray-400 text-[13px] ${selectedCategory?.value == data && 'bg-[black]'}`} >
+                                        {data} {selectedCategory?.value == data && <Image className="ml-1.5" src={'/onAir/close.svg'} width={15} height={15} alt='disable' />}
                                     </button>
                                 </CarouselItem>
                             ))}
@@ -94,8 +104,8 @@ const OnAir = () => {
                         <CarouselContent>
                             {typeList.map((data, index) => (
                                 <CarouselItem className="basis-auto" key={index}>
-                                    <button value={data} onClick={handleCategory} className={`flex items-center border px-[13px] py-[8px] rounded-full border-gray-100 text-gray-400 text-[13px] ${selectedCategory == data && 'bg-[black]'}`} >
-                                        {data} {selectedCategory == data && <Image className="ml-1.5" src={'/onAir/close.svg'} width={15} height={15} alt='disable' />}
+                                    <button value={data} onClick={(e) => handleCategory(e, 'type')} className={`flex items-center border px-[13px] py-[8px] rounded-full border-gray-100 text-gray-400 text-[13px] ${selectedCategory?.value == data && 'bg-[black]'}`} >
+                                        {data} {selectedCategory?.value == data && <Image className="ml-1.5" src={'/onAir/close.svg'} width={15} height={15} alt='disable' />}
                                     </button>
                                 </CarouselItem>
                             ))}
