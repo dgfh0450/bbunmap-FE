@@ -51,7 +51,6 @@ const OnAir = () => {
     // }
 
 
-
     const handleCategory = (e: MouseEvent<HTMLButtonElement>) => {
         const value = e.currentTarget.value;
         if (value == selectedCategory) setSelectedCategory('');
