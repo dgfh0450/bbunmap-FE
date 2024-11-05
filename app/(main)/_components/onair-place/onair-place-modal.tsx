@@ -114,6 +114,7 @@ interface PagePropsWithvote extends PageProps {
 
 
 function VotingPage({ page, setPage, vote, setvote }: PagePropsWithvote) {
+
     const { isPlaceModalOpen, setIsPlaceModalOpen, resetPlaceModal, selectedPlace, setSelectedPlace } = useOnAirModal();
 
     const handleVote = async () => {
@@ -133,6 +134,7 @@ function VotingPage({ page, setPage, vote, setvote }: PagePropsWithvote) {
             </div>
             <div className='relative'>
                 <div className='w-full h-[37px]' />
+
                 <VotingSlider vote={vote} setvote={setvote} />
                 <div className='flex justify-between'>
                     <span className='text-[13px]'>다 차 있어요</span>
