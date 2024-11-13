@@ -16,6 +16,7 @@ import OnAirPlaceModal from "../../_components/onair-place/onair-place-modal";
 import { useStoreLoginState } from "@/hooks/useStoreLoginState";
 import Request from "@/lib/fetch";
 import { TypesOnAirPlace } from "./onAir";
+import { useSession } from "next-auth/react";
 
 type TypesBuildingFilterType = 'buildingName' | 'type';
 
@@ -42,6 +43,9 @@ const OnAir = () => {
     const [selectedCategory, setSelectedCategory] = useState<TypesBuildingFilter | undefined>();
     const { isPlaceModalOpen, setIsPlaceModalOpen, resetPlaceModal, selectedPlace, setSelectedPlace } = useOnAirModal();
     const { isSaving, setIsSaving, state, setState, resetState } = useStoreLoginState();
+    const { update, data: session, status } = useSession();
+
+    // const [places, setPlaces] = useState([]);
 
     const { data: places, error, isLoading } = useQuery<TypesOnAirPlace[]>({
         queryKey: ['buildingCategory', selectedCategory?.value],
@@ -49,6 +53,13 @@ const OnAir = () => {
         staleTime: 300000,
         refetchInterval: 300000,
     });
+
+    // const getPlace = async () => {
+    //     console.log(session);
+    //     const request = new Request();
+    //     const response = await request.get('/api/realTime/places');
+    //     console.log(response);
+    // }
 
 
     const handleCategory = (e: MouseEvent<HTMLButtonElement>, type: TypesBuildingFilterType) => {
@@ -58,11 +69,16 @@ const OnAir = () => {
     }
 
     useEffect(() => {
+        // getPlace();
         if (isSaving) {
             setIsPlaceModalOpen(true);
             setSelectedPlace(state['selectedPlace'])
         }
     }, [])
+
+    useEffect(() => {
+        console.log(status, session);
+    }, [session, status])
 
     return (
         <div className="w-full max-w-[450px] h-full left-0 top-0 py-[15px] relative flex flex-col justify-start items-center mb-[68px]" >

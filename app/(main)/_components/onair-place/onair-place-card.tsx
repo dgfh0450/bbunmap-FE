@@ -14,7 +14,7 @@ import { TypesOnAirPlace } from '../../(routes)/onAir/onAir';
 
 
 export default function OnAirPlaceCard(data: TypesOnAirPlace) {
-    const { id, vote, placeName, buildingName, floor, placeType } = data;
+    const { buildingName, floor, placeName, placeType, vote, result, like } = data;
     const { isPlaceModalOpen, setIsPlaceModalOpen, resetPlaceModal, selectedPlace, setSelectedPlace } = useOnAirModal();
 
     const handleModal = () => {
