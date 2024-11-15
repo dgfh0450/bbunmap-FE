@@ -88,7 +88,11 @@ export const authOptions: AuthOptions = {
     },
 };
 
+// GET과 POST 메서드를 명시적으로 정의
+export async function GET(request: NextRequest) {
+    return NextAuth(authOptions)(request);
+}
 
-// App Router용 NextAuth 핸들러
-const handler = NextAuth(authOptions);
-export { handler as GET, handler as POST };
+export async function POST(request: NextRequest) {
+    return NextAuth(authOptions)(request);
+}
