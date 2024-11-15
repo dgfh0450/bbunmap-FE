@@ -41,7 +41,7 @@ const fetchCategoryData = (filterType: TypesBuildingFilter | undefined
 const buildingList = ['SK미래관', '과학도서관', '백주년기념관', '중앙광장 지하']
 const typeList = ['카페', '라운지']
 
-const OnAir = () => {
+const OnAirResult = () => {
     const [selectedCategory, setSelectedCategory] = useState<TypesBuildingFilter | undefined>();
     const { isPlaceModalOpen, setIsPlaceModalOpen, resetPlaceModal, selectedPlace, setSelectedPlace } = useOnAirModal();
     const { isSaving, setIsSaving, state, setState, resetState } = useStoreLoginState();
@@ -87,7 +87,7 @@ const OnAir = () => {
         <div className="w-full flex-1 overflow-y-scroll scrollbar-hide">
             <div className="w-auto flex flex-row items-center justify-between mx-4  px-[15px]">
                 <p className="font-semibold text-xl">지금 이곳에 있는<br />학생들의 답변이에요!</p>
-                <Image src='/onAir/vote_header.svg' width={92} height={92} alt="vote header" />
+                <Image src='/onAir/result_header.svg' width={92} height={92} alt="vote header" />
             </div>
             <div className="border-b-[6px] border-gray-50 bg-white px-5 py-[14px]">
                 <div className="w-full flex flex-col justify-start items-center pb-[14px]" >
@@ -150,4 +150,4 @@ const OnAir = () => {
     );
 };
 
-export default OnAir;
+export default OnAirResult;
