@@ -25,16 +25,7 @@ type TypesBuildingFilter = {
     value: string;
 }
 
-const fetchCategoryData = (filterType: TypesBuildingFilter | undefined
-): Promise<TypesOnAirPlace[]> => {
-    const request = new Request();
-    if (filterType === undefined) {
-        return request.get('/api/realTime/places');
-    }
-    else {
-        return request.get(`/api/realTime/places?${filterType.type}=${filterType.value}`);
-    }
-};
+
 
 const buildingList = ['SK미래관', '과학도서관', '백주년기념관', '중앙광장 지하']
 const typeList = ['카페', '라운지']
@@ -44,7 +35,6 @@ const OnAir = () => {
     const { isPlaceModalOpen, setIsPlaceModalOpen, resetPlaceModal, selectedPlace, setSelectedPlace } = useOnAirModal();
     const { isSaving, setIsSaving, state, setState, resetState } = useStoreLoginState();
     const { update, data: session, status } = useSession();
-    console.log(session);
 
     // const [places, setPlaces] = useState([]);
 
@@ -55,6 +45,16 @@ const OnAir = () => {
         refetchInterval: 300000,
     });
 
+    const fetchCategoryData = (filterType: TypesBuildingFilter | undefined
+    ): Promise<TypesOnAirPlace[]> => {
+        const request = new Request(session?.accessToken);
+        if (filterType === undefined) {
+            return request.get('/api/realTime/places');
+        }
+        else {
+            return request.get(`/api/realTime/places?${filterType.type}=${filterType.value}`);
+        }
+    };
     // const getPlace = async () => {
     //     console.log(session);
     //     const request = new Request();

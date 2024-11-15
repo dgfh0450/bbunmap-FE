@@ -57,7 +57,6 @@ export const authOptions = {
          * JWT에서 accessToken을 session에 저장
          */
         async session({ session, token }) {
-            console.log(session, token)
             session.accessToken = token.accessToken;
             session.refreshToken = token.refreshToken;
             session.userId = token.userId;

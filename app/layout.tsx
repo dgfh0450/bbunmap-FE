@@ -26,7 +26,6 @@ export default async function RootLayout({
     children: React.ReactNode;
 }) {
     const session = await getServerSession(authOptions);
-    console.log('here', session);
     const mainURL = process.env.NEXT_PUBLIC_MAIN_URL;
     return (
         <html lang="en" className="overflow-scroll scrollbar-hide">
