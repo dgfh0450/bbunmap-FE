@@ -44,6 +44,7 @@ const OnAir = () => {
     const { isPlaceModalOpen, setIsPlaceModalOpen, resetPlaceModal, selectedPlace, setSelectedPlace } = useOnAirModal();
     const { isSaving, setIsSaving, state, setState, resetState } = useStoreLoginState();
     const { update, data: session, status } = useSession();
+    console.log(session);
 
     // const [places, setPlaces] = useState([]);
 
@@ -76,9 +77,6 @@ const OnAir = () => {
         }
     }, [])
 
-    useEffect(() => {
-        console.log(status, session);
-    }, [session, status])
 
     return (
         <div className="w-full max-w-[450px] h-full left-0 top-0 py-[15px] relative flex flex-col justify-start items-center mb-[68px]" >
