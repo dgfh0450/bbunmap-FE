@@ -55,13 +55,6 @@ const OnAir = () => {
             return request.get(`/api/realTime/places?${filterType.type}=${filterType.value}`);
         }
     };
-    // const getPlace = async () => {
-    //     console.log(session);
-    //     const request = new Request();
-    //     const response = await request.get('/api/realTime/places');
-    //     console.log(response);
-    // }
-
 
     const handleCategory = (e: MouseEvent<HTMLButtonElement>, type: TypesBuildingFilterType) => {
         const value = e.currentTarget.value;
@@ -76,7 +69,6 @@ const OnAir = () => {
             setSelectedPlace(state['selectedPlace'])
         }
     }, [])
-
 
     return (
         <div className="w-full max-w-[450px] h-full left-0 top-0 py-[15px] relative flex flex-col justify-start items-center mb-[68px]" >
