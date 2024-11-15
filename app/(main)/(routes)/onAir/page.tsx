@@ -55,8 +55,8 @@ const OnAirVote = () => {
                 </div>
             </div>
             <ul className="w-full min-h-full bg-[#F8F8F8] overflow-y-scroll rounded-[30px] p-[15px]">
-                {[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1].map(data =>
-                    <OnAirVoteCard />
+                {[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1].map((data, idx) =>
+                    <OnAirVoteCard key={idx} />
                 )}
             </ul>
         </div>
