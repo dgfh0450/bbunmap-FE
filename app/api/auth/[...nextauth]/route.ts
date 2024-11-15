@@ -1,10 +1,10 @@
-import NextAuth, { Account, AuthOptions, Session, User } from "next-auth";
+import NextAuth, { Account, NextAuthOptions, Session, User } from "next-auth";
 import KakaoProvider from "next-auth/providers/kakao";
 import Request from "@/lib/fetch";
 import { JWT } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
-export const authOptions: AuthOptions = {
+export const authOptions: NextAuthOptions = {
     providers: [
         KakaoProvider({
             clientId: process.env.KAKAO_CLIENT_KEY ?? "",
@@ -12,17 +12,7 @@ export const authOptions: AuthOptions = {
         }),
     ],
     callbacks: {
-        /**
-         * signIn 콜백
-         * Kakao 로그인 후 서버와 통신하여 accessToken만 가져오기
-         */
-        async signIn({
-            user,
-            account,
-        }: {
-            user: User;
-            account: Account | null;
-        }): Promise<boolean> {
+        async signIn({ user, account }: { user: User; account: Account | null }): Promise<boolean> {
             if (!account) {
                 console.error("Account is null");
                 return false;
@@ -33,7 +23,7 @@ export const authOptions: AuthOptions = {
 
             try {
                 const response = await request.post("/api/signIn", {
-                    kakaoAccessToken: kakaoAccessToken,
+                    kakaoAccessToken,
                     email: user.email,
                     id: user.id,
                     nickName: user.name,
@@ -41,7 +31,7 @@ export const authOptions: AuthOptions = {
 
                 const { accessToken, refreshToken } = response;
 
-                user.accessToken = accessToken; // User에 저장
+                user.accessToken = accessToken;
                 user.refreshToken = refreshToken;
                 return true;
             } catch (err) {
@@ -50,21 +40,12 @@ export const authOptions: AuthOptions = {
             }
         },
 
-
-        /**
-         * JWT 콜백
-         * 로그인 시 받은 accessToken과 refreshToken을 token에 저장
-         */
-        async jwt({ token, user }: {
-            token: JWT;
-            user?: User;
-        }): Promise<JWT> {
+        async jwt({ token, user }: { token: JWT; user?: User }): Promise<JWT> {
             if (user) {
-                token.accessToken = user.accessToken; // User에서 가져옴
+                token.accessToken = user.accessToken;
                 token.refreshToken = user.refreshToken;
             }
 
-            // AccessToken 없을 경우 로그 출력
             if (!token.accessToken) {
                 console.error("No accessToken in token:", token);
             }
@@ -72,27 +53,21 @@ export const authOptions: AuthOptions = {
             return token;
         },
 
-        /**
-         * Session 콜백
-         * JWT에서 accessToken과 refreshToken을 session에 저장
-         */
-        async session({ session, token, }: {
-            session: Session;
-            token: JWT;
-        }): Promise<Session> {
-            session.accessToken = token.accessToken; // JWT에서 가져옴
+        async session({ session, token }: { session: Session; token: JWT }): Promise<Session> {
+            session.accessToken = token.accessToken;
             session.refreshToken = token.refreshToken;
-            session.userId = token.userId; // 사용자 ID 추가
+            session.userId = token.userId;
             return session;
         },
     },
 };
 
-// GET과 POST 메서드를 명시적으로 정의
+const handler = NextAuth(authOptions);
+
 export async function GET(request: NextRequest) {
-    return NextAuth(authOptions)(request);
+    return handler(request);
 }
 
 export async function POST(request: NextRequest) {
-    return NextAuth(authOptions)(request);
+    return handler(request);
 }
