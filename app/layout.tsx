@@ -5,7 +5,7 @@ import { getServerSession } from "next-auth";
 import SessionProvider from "./_components/SessionProvider";
 import { KAKAO_SDK_URL } from "./_components/kakao-map";
 import Script from "next/script";
-import { authOptions } from "./api/auth/[...nextauth]/route";
+import authOptions from "@/lib/authOption";
 
 const inter = Inter({ subsets: ["latin"] });
 
