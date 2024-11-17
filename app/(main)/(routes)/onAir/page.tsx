@@ -1,12 +1,15 @@
 "use client";
 
+import React, { useEffect, MouseEvent, useState } from "react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Request from "@/lib/fetch";
 import { TypesOnAirPlace } from "./onAir";
 import { useQuery } from "@tanstack/react-query";
 import OnAirVoteCard from "../../_components/onair/vote/onair-vote-card";
-
+import { useSession } from "next-auth/react";
+import { useOnAirModal } from "@/hooks/useOnAirModal";
+import { useStoreLoginState } from "@/hooks/useStoreLoginState";
 
 type TypesBuildingFilterType = 'buildingName' | 'type';
 
@@ -15,26 +18,44 @@ type TypesBuildingFilter = {
     value: string;
 }
 
-
-const fetchCategoryData = (filterType: TypesBuildingFilter | undefined
-): Promise<TypesOnAirPlace[]> => {
-    const request = new Request();
-    if (filterType === undefined) {
-        return request.get('/api/realTime/places');
-    }
-    else {
-        return request.get(`/api/realTime/places?${filterType.type}=${filterType.value}`);
-    }
-};
-
-
 const OnAirVote = () => {
+    const [selectedCategory, setSelectedCategory] = useState<TypesBuildingFilter | undefined>();
+    const { isPlaceModalOpen, setIsPlaceModalOpen, resetPlaceModal, selectedPlace, setSelectedPlace } = useOnAirModal();
+    const { isSaving, setIsSaving, state, setState, resetState } = useStoreLoginState();
+    const { update, data: session, status } = useSession();
+
+    // const [places, setPlaces] = useState([]);
     const { data: places, error, isLoading } = useQuery<TypesOnAirPlace[]>({
         queryKey: ['buildingCategory',],
         queryFn: () => fetchCategoryData(undefined),
         staleTime: 300000,
         refetchInterval: 300000,
     });
+
+    const fetchCategoryData = (filterType: TypesBuildingFilter | undefined
+    ): Promise<TypesOnAirPlace[]> => {
+        const request = new Request(session?.accessToken);
+        if (filterType === undefined) {
+            return request.get('/api/realTime/places');
+        }
+        else {
+            return request.get(`/api/realTime/places?${filterType.type}=${filterType.value}`);
+        }
+    };
+
+    const handleCategory = (e: MouseEvent<HTMLButtonElement>, type: TypesBuildingFilterType) => {
+        const value = e.currentTarget.value;
+        if (value == selectedCategory?.value) setSelectedCategory(undefined);
+        else setSelectedCategory({ type: type, value: value });
+    }
+
+    useEffect(() => {
+        // getPlace();
+        if (isSaving) {
+            setIsPlaceModalOpen(true);
+            setSelectedPlace(state['selectedPlace'])
+        }
+    }, [])
 
     return (
         <div className="w-full flex-1 overflow-y-scroll scrollbar-hide">

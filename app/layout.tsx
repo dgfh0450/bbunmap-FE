@@ -5,6 +5,7 @@ import { getServerSession } from "next-auth";
 import SessionProvider from "./_components/SessionProvider";
 import { KAKAO_SDK_URL } from "./_components/kakao-map";
 import Script from "next/script";
+import authOptions from "@/lib/authOption";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,7 +25,7 @@ export default async function RootLayout({
 }: {
     children: React.ReactNode;
 }) {
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
     const mainURL = process.env.NEXT_PUBLIC_MAIN_URL;
     return (
         <html lang="en" className="overflow-scroll scrollbar-hide">
