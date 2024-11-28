@@ -1,5 +1,5 @@
-import TabBar from "../../_components/tab-bar/tab-bar";
-import TopLinkBar from "../../_components/top-tab-bar/top-link-bar";
+import TabBar from "../../../_components/tab-bar/tab-bar";
+import TopLinkBar from "../../../_components/top-tab-bar/top-link-bar";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
     return (

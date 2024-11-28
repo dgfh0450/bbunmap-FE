@@ -7,3 +7,10 @@ export type TypesOnAirPlace = {
     result: number;
     like: boolean;
 }
+
+export type TypesBuildingFilterType = 'buildingName' | 'type';
+
+export type TypesBuildingFilter = {
+    type: TypesBuildingFilterType;
+    value: string;
+}
