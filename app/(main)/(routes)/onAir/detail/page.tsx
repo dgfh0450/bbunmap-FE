@@ -16,19 +16,21 @@ import Arrow from '@/public/Arrow.svg';
 import Star from '@/public/onAir/Star_fill.svg';
 import StarNone from '@/public/onAir/Star_none.svg';
 import Link from 'next/link';
+import { getOnAirPlace } from '../fetch';
+import { useSession } from 'next-auth/react';
+
+
 
 export default function OnAirResultDetail() {
     const params = useSearchParams();
-    const queryPlace = params.get("place")
+    const queryPlace = params.get("place");
 
-    const fetchPlaceData = (): Promise<TypesOnAirPlace> => {
-        const request = new Request();
-        return request.get(`/api/realTime?place=${queryPlace}`);
-    };
+    const { status: statusSession, data: session } = useSession();
+    const { status, data: place, error } = useQuery({ queryKey: [queryPlace], queryFn: () => getOnAirPlace(queryPlace, session) });
 
-    const { status, data: place, error } = useQuery({ queryKey: [queryPlace], queryFn: fetchPlaceData });
-    if (!place || error) return <div>no place</div>
-    const { buildingName, floor, placeName, placeType, vote, result, like } = place
+    if (!queryPlace || !place || error) return <div>no place</div>
+
+    const { buildingName, floor, placeName, placeType, vote, result, like, voteAvailable } = place;
 
     return (
         <div className='w-full max-w-[450px] h-full py-[51px] relative flex flex-col justify-start'>

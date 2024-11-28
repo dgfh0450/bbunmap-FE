@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import OnAirPlaceCard from "../../../../_components/onair-place/onair-place-card";
 import Request from "@/lib/fetch";
-import { TypesBuildingFilter, TypesBuildingFilterType, TypesOnAirPlace } from "../../onAir";
+import { TypeResponseOnAirPlace, TypesBuildingFilter, TypesBuildingFilterType, TypesOnAirPlace } from "../../onAir";
 import { useSession } from "next-auth/react";
 import { fetchOnAirPlaceList } from "../../fetch";
 import Close from '@/public/onAir/close.svg';
@@ -27,7 +27,7 @@ const OnAirResult = () => {
     const [selectedCategory, setSelectedCategory] = useState<TypesBuildingFilter | undefined>();
     const [modalOpenInfo, setModalOpenInfo] = useState<boolean>(false);
     const { update, data: session, status } = useSession();
-    const { data: places, error, isLoading } = useQuery<TypesOnAirPlace[]>({
+    const { data: response, error, isLoading } = useQuery<TypeResponseOnAirPlace>({
         queryKey: ['buildingCategory', selectedCategory],
         queryFn: () => fetchOnAirPlaceList(selectedCategory, session),
         staleTime: 300000,
@@ -98,11 +98,11 @@ const OnAirResult = () => {
                 <button
                     onClick={handleModalOpen}
                     className="w-full bg-[#F3F4F5] rounded-lg flex justify-between p-[10px] mt-[5px] font-regular text-gray-500 text-xs">
-                    <span className="flex items-center"><Clock className="m-[3px]" />15:00부터 현재까지 집계된 결과에요</span> <DotMenu />
+                    <span className="flex items-center"><Clock className="m-[3px]" />{response?.closestResetTime}부터 현재까지 집계된 결과에요</span> <DotMenu />
                 </button>
                 <ul className="w-full">
                     {
-                        places && places.map((data: TypesOnAirPlace, index: number) => {
+                        response && response.specificUserRealTimeDTOArr.map((data: TypesOnAirPlace, index: number) => {
                             return (
                                 <li key={`onair-place-card-${index}`} className="mt-3"><OnAirPlaceCard {...data} /></li>
                             )
