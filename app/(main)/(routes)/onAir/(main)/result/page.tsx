@@ -103,7 +103,7 @@ const OnAirResult = () => {
                     {
                         places && places.map((data: TypesOnAirPlace, index: number) => {
                             return (
-                                <li className="mt-3"><OnAirPlaceCard key={index} {...data} /></li>
+                                <li key={`onair-place-card-${index}`} className="mt-3"><OnAirPlaceCard {...data} /></li>
                             )
                         })
                     }
