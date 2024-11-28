@@ -21,6 +21,7 @@ import DotMenu from '@/public/vertical-dots.svg';
 import FullModal from "@/app/(main)/_components/FullModal";
 import Moon from '@/public/onAir/Moon.svg';
 import Connector from '@/public/onAir/connector.svg';
+import { buildingList, typeList } from "../../fetch";
 
 const OnAirResult = () => {
     const [selectedCategory, setSelectedCategory] = useState<TypesBuildingFilter | undefined>();
@@ -103,7 +104,7 @@ const OnAirResult = () => {
                     {
                         places && places.map((data: TypesOnAirPlace, index: number) => {
                             return (
-                                <li className="mt-3"><OnAirPlaceCard key={index} {...data} /></li>
+                                <li key={`onair-place-card-${index}`} className="mt-3"><OnAirPlaceCard {...data} /></li>
                             )
                         })
                     }
@@ -121,7 +122,7 @@ const OnAirResult = () => {
                             <ol className="mx-[15px]">
                                 {
                                     times.slice(0, -1).map((el, idx) =>
-                                        <li className="text-[11px] text-gray-500 font-regular my-0.5">{el}~{times[idx + 1]}</li>)
+                                        <li key={`vote-result-time-${idx}`} className="text-[11px] text-gray-500 font-regular my-0.5">{el}~{times[idx + 1]}</li>)
                                 }
                             </ol>
                             <div className="bg-[#E9EBED] flex items-center justify-center py-1.5 mt-2">
@@ -145,6 +146,5 @@ const OnAirResult = () => {
 };
 
 export default OnAirResult;
-export const buildingList = ['SK미래관', '과학도서관', '백주년기념관', '중앙광장 지하'] as const;
-export const typeList = ['카페', '라운지'] as const;
+
 const times = ['06:00', '09:00', '10:30', '12:00', '13:30', '15:00', '16:30', '18:00', '19:30', '21:00', '22:00'];
