@@ -121,7 +121,7 @@ const OnAirResult = () => {
                             <ol className="mx-[15px]">
                                 {
                                     times.slice(0, -1).map((el, idx) =>
-                                        <li className="text-[11px] text-gray-500 font-regular my-0.5">{el}~{times[idx + 1]}</li>)
+                                        <li key={`vote-result-time-${idx}`} className="text-[11px] text-gray-500 font-regular my-0.5">{el}~{times[idx + 1]}</li>)
                                 }
                             </ol>
                             <div className="bg-[#E9EBED] flex items-center justify-center py-1.5 mt-2">
