@@ -1,4 +1,4 @@
-import { buildingList } from '@/app/(main)/(routes)/onAir/(main)/result/page';
+import { buildingList } from '@/app/(main)/(routes)/onAir/fetch';
 import { TypesBuildingFilter } from '@/app/(main)/(routes)/onAir/onAir';
 import React from 'react';
 

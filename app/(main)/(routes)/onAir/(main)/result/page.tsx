@@ -21,6 +21,7 @@ import DotMenu from '@/public/vertical-dots.svg';
 import FullModal from "@/app/(main)/_components/FullModal";
 import Moon from '@/public/onAir/Moon.svg';
 import Connector from '@/public/onAir/connector.svg';
+import { buildingList, typeList } from "../../fetch";
 
 const OnAirResult = () => {
     const [selectedCategory, setSelectedCategory] = useState<TypesBuildingFilter | undefined>();
@@ -145,6 +146,4 @@ const OnAirResult = () => {
 };
 
 export default OnAirResult;
-export const buildingList = ['SK미래관', '과학도서관', '백주년기념관', '중앙광장 지하'] as const;
-export const typeList = ['카페', '라운지'] as const;
 const times = ['06:00', '09:00', '10:30', '12:00', '13:30', '15:00', '16:30', '18:00', '19:30', '21:00', '22:00'];
