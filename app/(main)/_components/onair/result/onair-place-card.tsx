@@ -1,8 +1,8 @@
 import React from 'react';
 import Pin from "@/public/onAir/pin.svg";
 import Star from "@/public/onAir/placeStar.svg";
-import styles from './gradient.module.css';
-import { TypesOnAirPlace } from '../../(routes)/onAir/onAir';
+import styles from '../gradient.module.css';
+import { TypesOnAirPlace } from '../../../(routes)/onAir/onAir';
 import Link from 'next/link';
 
 
@@ -16,7 +16,7 @@ export default function OnAirPlaceCard(data: TypesOnAirPlace) {
                 <p className='text-xs text-gray-500'>{buildingName} {floor}층</p>
             </div>
             <div className='w-[80px] h-full ml-3 relative'>
-                <Pin height={17} width={12.9} fill={vote > 60 ? '#9BE490' : vote > 40 ? '#A0A4A8' : '#FF6582'} className='relative translate-x-[-50%] mb-[1px]' style={{ left: `${vote}%` }} />
+                <Pin height={17} width={12.9} fill={result > 60 ? '#9BE490' : result > 40 ? '#A0A4A8' : '#FF6582'} className='relative translate-x-[-50%] mb-[1px]' style={{ left: `${result}%` }} />
                 <div className={`w-full h-[4px] rounded-full ${styles.gradient_bar}`}></div>
             </div>
         </Link>

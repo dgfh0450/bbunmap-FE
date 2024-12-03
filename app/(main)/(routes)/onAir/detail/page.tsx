@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { TypesOnAirPlace } from '../onAir';
 import Request from '@/lib/fetch';
 
-import styles from '../../../_components/onair-place/gradient.module.css';
+import styles from '../../../_components/onair/gradient.module.css';
 
 import SpaceNone from '@/public/onAir/space_none.svg';
 import SpaceLow from '@/public/onAir/space_low.svg';
@@ -50,13 +50,13 @@ export default function OnAirResultDetail() {
             <div className='relative my-16 mx-5'>
                 {(() => {
                     switch (true) {
-                        case vote <= 20:
+                        case result <= 20:
                             return <SpaceNone />;
-                        case vote <= 40:
+                        case result <= 40:
                             return <SpaceLow className='relative left-[25%] translate-x-[-50%]' />;
-                        case vote <= 60:
+                        case result <= 60:
                             return <SpaceNormal className='relative left-[50%] translate-x-[-50%]' />;
-                        case vote <= 80:
+                        case result <= 80:
                             return <SpaceEnough className='relative left-[75%] translate-x-[-50%]' />;
                         default:
                             return <SpacePlenty className='relative left-[100%] translate-x-[-100%]' />;

@@ -68,3 +68,24 @@ export const useWatchPosition = (options?: PositionOptions) => {
     return { location, error };
 
 }
+
+export const getCurrentLocation = (options?: PositionOptions): Promise<ILocation> => {
+    return new Promise((resolve, reject) => {
+        const handleSuccess = (pos: GeolocationPosition) => {
+            const { latitude, longitude } = pos.coords;
+            resolve({ latitude, longitude });
+        };
+
+        const handleError = (err: GeolocationPositionError) => {
+            reject(err);
+        };
+
+        const { geolocation } = navigator;
+        if (!geolocation) {
+            reject(new Error("Geolocation is not supported by your browser."));
+            return;
+        }
+
+        geolocation.getCurrentPosition(handleSuccess, handleError, options);
+    });
+};
