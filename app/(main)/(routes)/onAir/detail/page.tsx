@@ -1,7 +1,7 @@
 "use client"
 import React from 'react';
 import { useSearchParams } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { TypesOnAirPlace } from '../onAir';
 import Request from '@/lib/fetch';
 
@@ -16,28 +16,44 @@ import Arrow from '@/public/Arrow.svg';
 import Star from '@/public/onAir/Star_fill.svg';
 import StarNone from '@/public/onAir/Star_none.svg';
 import Link from 'next/link';
-import { getOnAirPlace } from '../fetch';
+import { fetchLike, getOnAirPlace } from '../fetch';
 import { useSession } from 'next-auth/react';
+import LoginError from '../CustomError';
 
 
 
 export default function OnAirResultDetail() {
     const params = useSearchParams();
     const queryPlace = params.get("place");
-
     const { status: statusSession, data: session } = useSession();
-    const { status, data: place, error } = useQuery({ queryKey: [queryPlace], queryFn: () => getOnAirPlace(queryPlace, session) });
+
+    const { status, data: place, error, refetch } = useQuery({
+        queryKey: [queryPlace],
+        queryFn: () => getOnAirPlace(queryPlace, session)
+    });
+
+    const { data: responseLike, error: errorLike, status: statusLike, mutate } = useMutation({
+        mutationFn: () => fetchLike(placeName, session),
+        onSuccess: () => {
+            refetch();
+        },
+        throwOnError: (e) => {
+            if (e instanceof LoginError) return true;
+            else return false;
+        }
+    })
 
     if (!queryPlace || !place || error) return <div>no place</div>
 
     const { buildingName, floor, placeName, placeType, vote, result, like, voteAvailable } = place;
+
 
     return (
         <div className='w-full max-w-[450px] h-full py-[51px] relative flex flex-col justify-start'>
             <div className='mx-5'>
                 <div className='flex flex-row justify-between mb-5'>
                     <Link href={'/onAir/result'}><Arrow stroke='#000000' width={12} height={22.5} strokeWidth={0.6} className=' rotate-180 translate-x-[20%]' /></Link>
-                    <button className=''>
+                    <button className='' onClick={() => mutate()}>
                         {like ?
                             <Star /> :
                             <StarNone />
@@ -50,13 +66,13 @@ export default function OnAirResultDetail() {
             <div className='relative my-16 mx-5'>
                 {(() => {
                     switch (true) {
-                        case vote <= 20:
+                        case result <= 20:
                             return <SpaceNone />;
-                        case vote <= 40:
+                        case result <= 40:
                             return <SpaceLow className='relative left-[25%] translate-x-[-50%]' />;
-                        case vote <= 60:
+                        case result <= 60:
                             return <SpaceNormal className='relative left-[50%] translate-x-[-50%]' />;
-                        case vote <= 80:
+                        case result <= 80:
                             return <SpaceEnough className='relative left-[75%] translate-x-[-50%]' />;
                         default:
                             return <SpacePlenty className='relative left-[100%] translate-x-[-100%]' />;

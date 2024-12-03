@@ -8,11 +8,11 @@ export default class Request {
     fetch = async (path: string, method: 'GET' | 'POST', body?: any, header: Record<string, any> = {}) => {
 
         const token = this.accessToken;
-        let authorization = 'Bearer ';
-        // if (token == null || token == undefined)
-        //     authorization = 'Bearer '
-        // else
-        //     authorization = `Bearer ${token}`;
+        let authorization;
+        if (token == null || token == undefined)
+            authorization = 'Bearer '
+        else
+            authorization = `Bearer ${token}`;
         console.log(authorization);
         const url = process.env.NEXT_PUBLIC_API_SERVER_MAIN_URL + path;
         // const url = 'http://localhost:3000' + path;

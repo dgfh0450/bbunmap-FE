@@ -28,6 +28,7 @@ export default function OnAirVoteCard(data: TypesOnAirPlace) {
             }, 3000);
         },
         onSuccess(data) {
+            console.log(data);
             window.location.reload();
         },
         throwOnError: (e) => {
