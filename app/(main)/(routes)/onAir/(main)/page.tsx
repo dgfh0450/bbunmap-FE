@@ -4,7 +4,7 @@ import React, { useEffect, MouseEvent, useState } from "react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Request from "@/lib/fetch";
-import { TypesBuildingFilter, TypesOnAirPlace } from "../onAir";
+import { TypeResponseOnAirPlace, TypesBuildingFilter, TypesOnAirPlace } from "../onAir";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import OnAirVoteCard from "../../../_components/onair/vote/onair-vote-card";
 import { signIn, useSession } from "next-auth/react";
@@ -23,7 +23,7 @@ const OnAirVote = () => {
     const [modalOpenLogin, setModalOpenLogin] = useState<boolean>(false);
     const { update, data: session, status } = useSession();
 
-    const { data: places, error, isLoading } = useQuery<TypesOnAirPlace[]>({
+    const { data: response, error, isLoading } = useQuery<TypeResponseOnAirPlace>({
         queryKey: ['buildingCategory', selectedCategory?.value],
         queryFn: () => fetchOnAirPlaceList(selectedCategory, session),
         staleTime: 300000,
@@ -77,7 +77,7 @@ const OnAirVote = () => {
                     {dropDownOpen && <CustomDropDown onSelect={handleCategory} />}
                 </span>
                 <ul>
-                    {places && places.map((data, idx) =>
+                    {response && response.specificUserRealTimeDTOArr.map((data, idx) =>
                         <OnAirVoteCard {...data} key={idx} />
                     )}
                 </ul>

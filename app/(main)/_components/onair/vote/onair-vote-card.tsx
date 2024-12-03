@@ -9,7 +9,7 @@ import { fetchVote } from '@/app/(main)/(routes)/onAir/fetch';
 import LoginError from '@/app/(main)/(routes)/onAir/CustomError';
 
 export default function OnAirVoteCard(data: TypesOnAirPlace) {
-    const { buildingName, floor, placeName, placeType, vote, like, result } = data;
+    const { buildingName, floor, placeName, placeType, vote, like, result, voteAvailable } = data;
     const [value, setValue] = useState<number>(-1);
     const [isError, setError] = useState<{ status: boolean, message: string }>({ status: false, message: '' });
     const request = new Request();
@@ -56,10 +56,10 @@ export default function OnAirVoteCard(data: TypesOnAirPlace) {
                 onClick={() => mutate()}
                 className={cn(
                     'border py-3 rounded-[10px]',
-                    value == -1 || isError.status ? 'border-[#DADADA]' : buttonColor[value])}
-                disabled={isError.status}
+                    voteAvailable ? (value == -1 || isError.status ? 'border-[#DADADA]' : buttonColor[value]) : "text-[#676767] border-[#FFFFFF] bg-[#FFFFFF]")}
+                disabled={isError.status || !voteAvailable}
             >
-                {isError.status ? isError.message : '투표하기'}
+                {voteAvailable ? (isError.status ? isError.message : '투표하기') : '투표가 완료되었습니다'}
             </button>
         </li >
     )

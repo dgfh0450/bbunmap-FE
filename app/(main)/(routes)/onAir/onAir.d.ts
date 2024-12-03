@@ -1,3 +1,8 @@
+export type TypeResponseOnAirPlace = {
+    closestResetTime: string;
+    specificUserRealTimeDTOArr: TypesOnAirPlace[];
+}
+
 export type TypesOnAirPlace = {
     buildingName: string;
     floor: string;
@@ -6,6 +11,7 @@ export type TypesOnAirPlace = {
     vote: number;
     result: number;
     like: boolean;
+    voteAvailable: boolean;
 }
 
 export type TypesBuildingFilterType = 'buildingName' | 'type';
