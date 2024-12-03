@@ -111,7 +111,7 @@ const OnAirResult = () => {
                 </ul>
             </div>
             <FullModal isOpen={modalOpenInfo}>
-                <div className="text-[19px] w-full h-[400px] mx-4 p-4 bg-white rounded-[10px]">
+                <div className="text-[19px] w-full max-w-[450px] h-[400px] mx-4 p-4 bg-white rounded-[10px]">
                     <div className="flex justify-end mb-4">
                         <button onClick={handleModalOpen}><Close width={30} height={30} fill="#000000" /></button>
                     </div>

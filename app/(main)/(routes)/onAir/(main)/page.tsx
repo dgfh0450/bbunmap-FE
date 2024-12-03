@@ -83,7 +83,7 @@ const OnAirVote = () => {
                 </ul>
             </div >
             <FullModal isOpen={modalOpenLogin}>
-                <div className="w-full mx-4 rounded-[10px] bg-white p-4 flex flex-col justify-between">
+                <div className="w-full max-w-[450px] mx-4 rounded-[10px] bg-white p-4 flex flex-col justify-between">
                     <div className='flex justify-end'>
                         <button className='flex' onClick={handleModalOpen}><Close width={30} height={30} fill='#000000' /></button>
                     </div>
