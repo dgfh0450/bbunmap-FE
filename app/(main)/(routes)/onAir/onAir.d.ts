@@ -1,3 +1,5 @@
+import { TypesCafeProperty, TypesDetailBase, TypesLoungeProperty } from "../../types";
+
 export type TypeResponseOnAirPlace = {
     closestResetTime: string;
     specificUserRealTimeDTOArr: TypesOnAirPlace[];
@@ -21,27 +23,10 @@ export type TypesBuildingFilter = {
     value: string;
 }
 
-export type TypesPlaceDetailBase = {
-    buildingName: string;
+
+export interface TypesOnAirPlaceDetail extends TypesDetailBase {
     buildingNum: string;
-    type: string;
-    keyword: string;
-    picFile: string | null;
-    placeExplain: string;
-    floorFacilityImage: string | null;
-    [key: string]: string;
 }
 
-export interface TypesCafeDetail extends TypesPlaceDetailBase {
-    cafeName: string;
-    location: string;
-    weekdayAvailableTime: string;
-    weekendAvailableTime: string;
-}
-
-export interface TypesLoungeDetail extends TypesPlaceDetailBase {
-    loungeName: string;
-    mood: string;
-    conversation: string;
-    socket: string;
-}
+export type TypesLoungeDetail = TypesOnAirPlaceDetail & TypesLoungeProperty;
+export type TypesCafeDetail = TypesOnAirPlaceDetail & TypesCafeProperty;

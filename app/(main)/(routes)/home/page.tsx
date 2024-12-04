@@ -10,119 +10,144 @@ import BottomSheetTitle from "../../_components/bottom-sheet-title";
 import { useSearchModal } from "@/hooks/useSearchModal";
 import { useSession } from "next-auth/react";
 import { SearchModal } from "../../_components/search-modal/search-modal";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useTabBarStore } from "@/hooks/useTabBar";
 import { useBottomSheetStore } from "@/hooks/useBottomSheetAppearance";
 import SearchBottomModal from "../../_components/search-bottom-modal/search-bottom-modal";
-import { useQuery } from "@tanstack/react-query";
+import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const BottomSheetWithDynamicImport = dynamic(
-  () => import("../../_components/bottom-sheet/BottomSheet"),
-  { loading: () => <div>Loading...</div>, ssr: false }
+    () => import("../../_components/bottom-sheet/BottomSheet"),
+    { loading: () => <div>Loading...</div>, ssr: false }
 );
 
 const fetchBuildingLocation = async () => {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_SERVER_MAIN_URL}/buildings/location`
-  );
-  return response.json();
+    const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_SERVER_MAIN_URL}/buildings/location`
+    );
+    return response.json();
 };
 
-export default function Home() {
-  console.log("뻔맵을 찾아주셔서 감사합니다! 🥰");
-  console.log("뻔맵은 아직 개발중이에요! 🤔");
-  console.log("뻔맵은 더 좋은 서비스를 위해 노력하고 있어요! 🤩");
-  console.log("뻔맵은 여러분의 의견을 기다리고 있어요! 🤗");
-  console.log(
-    "개발을 좋아하는 여러분들을 기다리고 있어요! 🙏",
-    "https://handy-sidecar-68b.notion.site/1-482b51d0803248648be5bc0aadff44fe"
-  );
+export default function Home({ searchParams, }: {
+    searchParams: { [key: string]: string };
+}) {
+    console.log("뻔맵을 찾아주셔서 감사합니다! 🥰");
+    console.log("뻔맵은 아직 개발중이에요! 🤔");
+    console.log("뻔맵은 더 좋은 서비스를 위해 노력하고 있어요! 🤩");
+    console.log("뻔맵은 여러분의 의견을 기다리고 있어요! 🤗");
+    console.log(
+        "개발을 좋아하는 여러분들을 기다리고 있어요! 🙏",
+        "https://handy-sidecar-68b.notion.site/1-482b51d0803248648be5bc0aadff44fe"
+    );
 
-  const { isSearchModalOpen, setSearchModalClose } = useSearchModal();
-  const { setTab } = useTabBarStore();
-  const { isBottomSheetVisible, openBottomSheet } = useBottomSheetStore(); // Zustand store 사용
+    const { isSearchModalOpen, setSearchModalClose } = useSearchModal();
+    const { setTab } = useTabBarStore();
+    const { isBottomSheetVisible, openBottomSheet } = useBottomSheetStore(); // Zustand store 사용
+    const buildingName = searchParams.buildingName;
+    const queryClient = useQueryClient();
+    // 새로운 useQuery 훅
+    const {
+        isPending: locationIsPending,
+        error: locationError,
+        data: locationData,
+        status: locationStatus,
+    } = useQuery<BuildingInfo[]>({
+        queryKey: ["buildingLocation"],
+        queryFn: fetchBuildingLocation,
+    });
 
-  // 새로운 useQuery 훅
-  const {
-    isPending: locationIsPending,
-    error: locationError,
-    data: locationData,
-  } = useQuery<BuildingInfo[]>({
-    queryKey: ["buildingLocation"],
-    queryFn: fetchBuildingLocation,
-  });
+    const latLng: BuildingInfo[] = [
+        { lat: 37.5845688, lon: 127.0265505, name: "과학도서관" },
+        { lat: 37.58669797, lon: 127.03110737, name: "미디어관" },
+    ];
+    const [center, setCenter] = useState({ lat: 37.58379268032499, lon: 127.02954409489267 });
 
-  const latLng: BuildingInfo[] = [
-    { lat: 37.5845688, lon: 127.0265505, name: "과학도서관" },
-    { lat: 37.58669797, lon: 127.03110737, name: "미디어관" },
-  ];
-  const center = { lat: 37.58379268032499, lon: 127.02954409489267 };
+    const onAirData = {
+        buildingName: "미래관 B1",
+        seats: 10,
+        buildingMaxCapacity: 20,
+    };
 
-  const onAirData = {
-    buildingName: "미래관 B1",
-    seats: 10,
-    buildingMaxCapacity: 20,
-  };
+    const moveToBuilding = (buildingName: string) => {
+        const locations = queryClient.getQueryData<BuildingInfo[]>(['buildingLocation']);
 
-  useEffect(() => {
-    setTab("home");
-    // setSearchModalClose();
-    openBottomSheet();
-    console.log("loc", locationData);
-  }, [locationData, openBottomSheet, setTab]);
+        if (locations) {
+            const targetBuilding = locations.find(
+                (building) => building.name === buildingName
+            );
 
-  return (
-    <div className="w-full max-w-[450px] h-full left-0 top-0">
-      <KakaoMap
-        markers={locationIsPending ? latLng : locationData}
-        center={center}
-        bottomSheetEvent={true}
-        markerCurious={true}
-      />
-      <TopAppBar />
-      {isBottomSheetVisible && (
-        <BottomSheetWithDynamicImport>
-          <BottomSheetTitle route="/onAir">
-            <div>
-              <span>
-                <strong>실시간 공간 정보</strong>
-              </span>
-            </div>
-          </BottomSheetTitle>
-          <BottomSheetCard
-            buildingName={onAirData.buildingName}
-            buildingMaxCapacity={onAirData.buildingMaxCapacity}
-            seats={onAirData.seats}
-            showText={true}
-          />
-          <BottomSheetTitle route="/recommend">
-            <div>
-              <strong>이동꿀팁</strong>
-            </div>
-          </BottomSheetTitle>
-          <div className="relative w-full mb-4">
-            <Image
-              src={"/route/route1.png"}
-              alt="route Image"
-              layout="responsive"
-              width={1920} // 원본 이미지의 너비
-              height={1080} // 원본 이미지의 높이
-              objectFit="cover"
+            if (targetBuilding) {
+                console.log(targetBuilding)
+                setCenter({ lat: targetBuilding.lat, lon: targetBuilding.lon })
+            }
+        }
+    };
+
+    useEffect(() => {
+        if (buildingName && locationStatus === 'success') {
+            moveToBuilding(buildingName);
+        }
+    }, [searchParams, locationStatus])
+
+    useEffect(() => {
+        setTab("home");
+        // setSearchModalClose();
+        openBottomSheet();
+        console.log("loc", locationData);
+    }, [locationData, openBottomSheet, setTab]);
+
+    return (
+        <div className="w-full max-w-[450px] h-full left-0 top-0">
+            <KakaoMap
+                markers={locationIsPending ? latLng : locationData}
+                center={center}
+                bottomSheetEvent={true}
+                markerCurious={true}
             />
-          </div>
-          {/* <NewRouteCard
+            <TopAppBar />
+            {isBottomSheetVisible && (
+                <BottomSheetWithDynamicImport>
+                    <BottomSheetTitle route="/onAir">
+                        <div>
+                            <span>
+                                <strong>실시간 공간 정보</strong>
+                            </span>
+                        </div>
+                    </BottomSheetTitle>
+                    <BottomSheetCard
+                        buildingName={onAirData.buildingName}
+                        buildingMaxCapacity={onAirData.buildingMaxCapacity}
+                        seats={onAirData.seats}
+                        showText={true}
+                    />
+                    <BottomSheetTitle route="/recommend">
+                        <div>
+                            <strong>이동꿀팁</strong>
+                        </div>
+                    </BottomSheetTitle>
+                    <div className="relative w-full mb-4">
+                        <Image
+                            src={"/route/route1.png"}
+                            alt="route Image"
+                            layout="responsive"
+                            width={1920} // 원본 이미지의 너비
+                            height={1080} // 원본 이미지의 높이
+                            objectFit="cover"
+                        />
+                    </div>
+                    {/* <NewRouteCard
           fromBuildingName={routeData.fromBulidingName}
           toBuildingName={routeData.toBuildingName}
         /> */}
-          <BottomSheetTitle route="/recommend/place" settingRecommand={true}>
-            <div className="font-bold">지금 갈만한 곳은</div>
-          </BottomSheetTitle>
-        </BottomSheetWithDynamicImport>
-      )}
-      {!isBottomSheetVisible && (
-        <SearchBottomModal searchType="메인" buttonNumber={1} />
-      )}
-      {isSearchModalOpen && <SearchModal />}
-    </div>
-  );
+                    <BottomSheetTitle route="/recommend/place" settingRecommand={true}>
+                        <div className="font-bold">지금 갈만한 곳은</div>
+                    </BottomSheetTitle>
+                </BottomSheetWithDynamicImport>
+            )}
+            {!isBottomSheetVisible && (
+                <SearchBottomModal searchType="메인" buttonNumber={1} />
+            )}
+            {isSearchModalOpen && <SearchModal />}
+        </div>
+    );
 }

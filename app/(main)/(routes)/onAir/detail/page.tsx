@@ -92,8 +92,8 @@ export default function OnAirResultDetail() {
                 })()}
                 <div className={`${styles.gradient_bar} w-full h-[15px] border border-[#E4E4E4] rounded-full mt-2 mb-2`} />
                 <div className='flex justify-between'>
-                    <span className='text-[13px]'>다 차 있어요</span>
-                    <span className='text-[13px]'>빈 자리 많아요</span>
+                    <span className='text-[12px] font-regulars ml-[3px] text-gray-500'>다 차 있어요</span>
+                    <span className='text-[12px] font-regulars mr-[3px] text-gray-500'>빈 자리 많아요</span>
                 </div>
             </div>
             <Link href={'/onAir'} className='w-auto border border-gray-100 mx-5 my-8 px-4 py-[11px] rounded-[5px] text-sm flex flex-row justify-between items-center'>
@@ -120,7 +120,7 @@ export default function OnAirResultDetail() {
                         })()
                     }
                 </div>
-                <div>
+                <div className='ml-1'>
                     {
                         Object.keys(detail).filter(
                             d => detailCategoryMap.has(d)).map(
