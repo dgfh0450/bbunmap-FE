@@ -19,6 +19,7 @@ export const fetchOnAirPlaceList = (filterType: TypesBuildingFilter | undefined,
 export const getOnAirPlace = (placeName: string | null, session: Session | null
 ): Promise<TypesOnAirPlace> => {
     if (!placeName) throw new Error('없는 장소 입니다.')
+
     const request = new Request(session?.accessToken);
     return request.get(`/api/realTime?place=${placeName}`);
 }
