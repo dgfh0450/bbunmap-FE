@@ -10,16 +10,13 @@ interface IIndicator {
 
 export default function CarouselIndicator({ srcSet, alts, className }: IIndicator) {
     const [currentIdx, setCurrentIdx] = useState<number>(0);
-    const [isDragging, setIsDragging] = useState<boolean>(false);
     const [startX, setStartX] = useState<number>(-1);
 
     const n = srcSet.length;
 
     const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-        setIsDragging(true);
         setStartX(e.clientX);
     };
-
 
     const handleMouseUp = (e: React.MouseEvent<HTMLDivElement>) => {
 
@@ -37,12 +34,35 @@ export default function CarouselIndicator({ srcSet, alts, className }: IIndicato
         }
     };
 
+    const handleTouchStart = (e: React.TouchEvent) => {
+        const touchList = e.changedTouches;
+        setStartX(touchList[0].clientX)
+    }
+
+    const handleTouchEnd = (e: React.TouchEvent) => {
+        const touchList = e.changedTouches;
+        const currentX = touchList[0].clientX;
+        const deltaX = currentX - startX;
+        if (Math.abs(deltaX) > 50) {
+            if (deltaX > 0) {
+                if (currentIdx == 0) return;
+                setCurrentIdx(currentIdx - 1);
+            }
+            else {
+                if (currentIdx == n - 1) return;
+                setCurrentIdx(currentIdx + 1);
+            }
+        }
+    }
+
     return (
         <div
             className={`${className} flex flex-row overflow-hidden relative`}
             onMouseDown={handleMouseDown}
             onMouseUp={handleMouseUp}
             onDragStart={(e) => e.preventDefault()}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
         >
             {
                 srcSet.map((src, idx) => (
