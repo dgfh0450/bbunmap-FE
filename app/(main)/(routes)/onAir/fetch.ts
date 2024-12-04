@@ -24,6 +24,18 @@ export const getOnAirPlace = (placeName: string | null, session: Session | null
     return request.get(`/api/realTime?place=${placeName}`);
 }
 
+export const getPlaceDetail = <T extends '카페' | '라운지'>(buildingName: string | null, placeName: string | null, type: T): Promise<T extends '카페' ? TypesCafeDetail : TypesLoungeDetail> => {
+    const request = new Request();
+    if (!placeName || !buildingName) throw new Error('올바르지 않은 대상입니다.')
+    if (type === '카페') {
+        return request.get(`/f/cafe?buildingName=${buildingName}&facilityName=${placeName}`);
+    }
+    else if (type === '라운지') {
+        return request.get(`/f/lounge?buildingName=${buildingName}&facilityName=${placeName}`);
+    } else {
+        throw new Error('Invalid Type')
+    }
+};
 
 export const fetchVote = async (value: number, placeName: string, session: Session | null): Promise<any> => {
     const { longitude, latitude } = await getCurrentLocation();
