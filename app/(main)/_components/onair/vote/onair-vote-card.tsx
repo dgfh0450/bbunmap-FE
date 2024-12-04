@@ -45,11 +45,11 @@ export default function OnAirVoteCard(data: TypesOnAirPlace) {
             <p className='font-semibold text-xl'>{buildingName} {placeName}</p>
             <p className='font-regular text-[13px] text-gray-500'>{buildingName} {floor}층</p>
             <div className='w-[90%] self-center flex flex-row justify-between items-center relative my-10'>
-                <CustomRadio placeName={placeName} onChange={onChangeValue} color='#FE7776' value={0} label='다 차 있어요' />
-                <CustomRadio placeName={placeName} onChange={onChangeValue} color='#FFB1AF' value={25} />
-                <CustomRadio placeName={placeName} onChange={onChangeValue} color='#DEDEDE' value={50} />
-                <CustomRadio placeName={placeName} onChange={onChangeValue} color='#CEF3C2' value={75} />
-                <CustomRadio placeName={placeName} onChange={onChangeValue} color='#C0ECB1' value={100} label='빈 자리 많아요' />
+                <CustomRadio disabled={!voteAvailable} placeName={placeName} onChange={onChangeValue} color='#FE7776' value={0} label='다 차 있어요' />
+                <CustomRadio disabled={!voteAvailable} placeName={placeName} onChange={onChangeValue} color='#FFB1AF' value={25} />
+                <CustomRadio disabled={!voteAvailable} placeName={placeName} onChange={onChangeValue} color='#DEDEDE' value={50} />
+                <CustomRadio disabled={!voteAvailable} placeName={placeName} onChange={onChangeValue} color='#CEF3C2' value={75} />
+                <CustomRadio disabled={!voteAvailable} placeName={placeName} onChange={onChangeValue} color='#C0ECB1' value={100} label='빈 자리 많아요' />
                 <div className='absolute w-full h-[2px] bg-[#E4E4E4] top-[50%] translate-y-[-50%]' />
             </div>
             <button

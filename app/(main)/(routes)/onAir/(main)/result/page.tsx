@@ -10,7 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
-import OnAirPlaceCard from "../../../../_components/onair-place/onair-place-card";
+import OnAirPlaceCard from "@/app/(main)/_components/onair/result/onair-place-card";
 import Request from "@/lib/fetch";
 import { TypeResponseOnAirPlace, TypesBuildingFilter, TypesBuildingFilterType, TypesOnAirPlace } from "../../onAir";
 import { useSession } from "next-auth/react";

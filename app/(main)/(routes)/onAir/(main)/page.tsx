@@ -66,7 +66,7 @@ const OnAirVote = () => {
                     <p className="absolute right-0 bottom-0 text-gray-500 font-regular text-[11px] translate-y-[100%]" >15/20</p>
                 </div>
             </div>
-            <div className="w-full min-h-full bg-[#F8F8F8] overflow-y-scroll rounded-t-[30px] p-[15px]">
+            <div className="w-full min-h-full bg-[#F8F8F8] overflow-y-scroll scrollbar-hide rounded-t-[30px] p-[15px]">
                 <span className="text-sm font-regular text-gray-500 relative flex">
                     <button className="font-medium text-[15px] text-black mx-[6px] flex items-center"
                         onClick={handleDropDown}>
