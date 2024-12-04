@@ -28,9 +28,7 @@ const fetchBuildingLocation = async () => {
     return response.json();
 };
 
-export default function Home({ searchParams, }: {
-    searchParams: { [key: string]: string };
-}) {
+export default function Home() {
     console.log("뻔맵을 찾아주셔서 감사합니다! 🥰");
     console.log("뻔맵은 아직 개발중이에요! 🤔");
     console.log("뻔맵은 더 좋은 서비스를 위해 노력하고 있어요! 🤩");
@@ -43,8 +41,6 @@ export default function Home({ searchParams, }: {
     const { isSearchModalOpen, setSearchModalClose } = useSearchModal();
     const { setTab } = useTabBarStore();
     const { isBottomSheetVisible, openBottomSheet } = useBottomSheetStore(); // Zustand store 사용
-    const buildingName = searchParams.buildingName;
-    const queryClient = useQueryClient();
     // 새로운 useQuery 훅
     const {
         isPending: locationIsPending,
@@ -60,34 +56,12 @@ export default function Home({ searchParams, }: {
         { lat: 37.5845688, lon: 127.0265505, name: "과학도서관" },
         { lat: 37.58669797, lon: 127.03110737, name: "미디어관" },
     ];
-    const [center, setCenter] = useState({ lat: 37.58379268032499, lon: 127.02954409489267 });
-
     const onAirData = {
         buildingName: "미래관 B1",
         seats: 10,
         buildingMaxCapacity: 20,
     };
 
-    const moveToBuilding = (buildingName: string) => {
-        const locations = queryClient.getQueryData<BuildingInfo[]>(['buildingLocation']);
-
-        if (locations) {
-            const targetBuilding = locations.find(
-                (building) => building.name === buildingName
-            );
-
-            if (targetBuilding) {
-                console.log(targetBuilding)
-                setCenter({ lat: targetBuilding.lat, lon: targetBuilding.lon })
-            }
-        }
-    };
-
-    useEffect(() => {
-        if (buildingName && locationStatus === 'success') {
-            moveToBuilding(buildingName);
-        }
-    }, [searchParams, locationStatus])
 
     useEffect(() => {
         setTab("home");
@@ -100,7 +74,6 @@ export default function Home({ searchParams, }: {
         <div className="w-full max-w-[450px] h-full left-0 top-0">
             <KakaoMap
                 markers={locationIsPending ? latLng : locationData}
-                center={center}
                 bottomSheetEvent={true}
                 markerCurious={true}
             />

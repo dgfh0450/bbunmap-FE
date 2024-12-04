@@ -2,10 +2,11 @@
 
 import { useBottomSheetStore } from "@/hooks/useBottomSheetAppearance";
 import { useSearchBottomModal } from "@/hooks/useSearchBottomModal";
-import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Map, MapMarker } from "react-kakao-maps-sdk";
 import Cookies from "js-cookie";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const KAKAO_SDK_URL = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_APP_JS_KEY}&autoload=false`;
 
@@ -25,7 +26,6 @@ export interface BuildingFacilityInfo extends BuildingInfo {
 interface KakaoMapProps {
     markers?: BuildingFacilityInfo[];
     markersImage?: string;
-    center: LatLng;
     markerModalEvent?: boolean;
     bulidingInfoEvent?: boolean;
     bottomSheetEvent?: boolean;
@@ -34,13 +34,12 @@ interface KakaoMapProps {
 
 const KakaoMap = ({
     markers,
-    center,
     markerModalEvent,
     bulidingInfoEvent,
     bottomSheetEvent,
     markerCurious,
 }: KakaoMapProps) => {
-    const router = useRouter();
+    const router = useSearchParams();
     const [state, setState] = useState({
         // 지도의 초기 위치
         center: { lat: 37.58379268032499, lng: 127.02954409489267 },
@@ -64,15 +63,27 @@ const KakaoMap = ({
 
     const [markerImage, setMarkerImage] = useState<string>("/icons/tooltip.svg");
     const [markerWH, setMarkerWH] = useState({ width: 130, height: 74 });
+    const params = useSearchParams();
+    const queryClient = useQueryClient();
 
-    //url을 통해 중간점을 지정하는 경우
+    const moveToBuilding = (buildingName: string) => {
+        const locations = queryClient.getQueryData<BuildingInfo[]>(['buildingLocation'])
+        if (locations) {
+            const target = locations.find((building) => building.name === buildingName);
+            console.log(target)
+            if (target) {
+                setState({ level: 4, isPanto: true, center: { lat: target.lat, lng: target.lon } })
+            }
+        }
+    }
+
     useEffect(() => {
-        setState({
-            level: state.level,
-            isPanto: state.isPanto,
-            center: { lat: center.lat, lng: center.lon }
-        })
-    }, [center])
+        const buildingName = params.get('buildingName')
+        if (buildingName) {
+            moveToBuilding(buildingName)
+        }
+        console.log('params ----------------> ', buildingName);
+    }, [params])
 
     useEffect(() => {
         const isFirstVisit = !Cookies.get("visited");
