@@ -10,142 +10,151 @@ import Cookies from "js-cookie";
 export const KAKAO_SDK_URL = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_APP_JS_KEY}&autoload=false`;
 
 export interface LatLng {
-  lat: number;
-  lon: number;
+    lat: number;
+    lon: number;
 }
 
 export interface BuildingInfo extends LatLng {
-  name?: string;
+    name?: string;
 }
 
 export interface BuildingFacilityInfo extends BuildingInfo {
-  facilityNumber?: number;
+    facilityNumber?: number;
 }
 
 interface KakaoMapProps {
-  markers?: BuildingFacilityInfo[];
-  markersImage?: string;
-  center: LatLng;
-  markerModalEvent?: boolean;
-  bulidingInfoEvent?: boolean;
-  bottomSheetEvent?: boolean;
-  markerCurious?: boolean;
+    markers?: BuildingFacilityInfo[];
+    markersImage?: string;
+    center: LatLng;
+    markerModalEvent?: boolean;
+    bulidingInfoEvent?: boolean;
+    bottomSheetEvent?: boolean;
+    markerCurious?: boolean;
 }
 
 const KakaoMap = ({
-  markers,
-  center,
-  markerModalEvent,
-  bulidingInfoEvent,
-  bottomSheetEvent,
-  markerCurious,
+    markers,
+    center,
+    markerModalEvent,
+    bulidingInfoEvent,
+    bottomSheetEvent,
+    markerCurious,
 }: KakaoMapProps) => {
-  const router = useRouter();
-  const [state, setState] = useState({
-    // 지도의 초기 위치
-    center: { lat: center.lat, lng: center.lon },
-    // 지도 위치 변경시 panto를 이용할지에 대해서 정의
-    isPanto: true,
-    level: 4,
-  });
-  const {
-    setSearchBottomModalOpen,
-    setBottomModalSearchBuilding,
-    isSearchBottomModalOpen,
-    setSearchBottomModalClose,
-    bottomModalSearchBuilding,
-  } = useSearchBottomModal();
-  const {
-    isBottomSheetVisible,
-    toggleBottomSheet,
-    closeBottomSheet,
-    openBottomSheet,
-  } = useBottomSheetStore(); // Zustand store 사용
+    const router = useRouter();
+    const [state, setState] = useState({
+        // 지도의 초기 위치
+        center: { lat: 37.58379268032499, lng: 127.02954409489267 },
+        // 지도 위치 변경시 panto를 이용할지에 대해서 정의
+        isPanto: true,
+        level: 4,
+    });
+    const {
+        setSearchBottomModalOpen,
+        setBottomModalSearchBuilding,
+        isSearchBottomModalOpen,
+        setSearchBottomModalClose,
+        bottomModalSearchBuilding,
+    } = useSearchBottomModal();
+    const {
+        isBottomSheetVisible,
+        toggleBottomSheet,
+        closeBottomSheet,
+        openBottomSheet,
+    } = useBottomSheetStore(); // Zustand store 사용
 
-  const [markerImage, setMarkerImage] = useState<string>("/icons/tooltip.svg");
-  const [markerWH, setMarkerWH] = useState({ width: 130, height: 74 });
+    const [markerImage, setMarkerImage] = useState<string>("/icons/tooltip.svg");
+    const [markerWH, setMarkerWH] = useState({ width: 130, height: 74 });
 
-  useEffect(() => {
-    const isFirstVisit = !Cookies.get("visited");
-    const delay = isFirstVisit ? 5000 : 2000;
-    console.log("first? ", isFirstVisit);
+    //url을 통해 중간점을 지정하는 경우
+    useEffect(() => {
+        setState({
+            level: state.level,
+            isPanto: state.isPanto,
+            center: { lat: center.lat, lng: center.lon }
+        })
+    }, [center])
 
-    const timer = setTimeout(() => {
-      setMarkerImage("/pin-copy.png");
-      setMarkerWH({ width: 25, height: 35 });
-    }, delay);
+    useEffect(() => {
+        const isFirstVisit = !Cookies.get("visited");
+        const delay = isFirstVisit ? 5000 : 2000;
+        console.log("first? ", isFirstVisit);
 
-    Cookies.set("visited", "true", { expires: 1 / 24 });
+        const timer = setTimeout(() => {
+            setMarkerImage("/pin-copy.png");
+            setMarkerWH({ width: 25, height: 35 });
+        }, delay);
 
-    return () => clearTimeout(timer);
-  }, []);
+        Cookies.set("visited", "true", { expires: 1 / 24 });
 
-  return (
-    <>
-      <Map
-        center={state.center}
-        isPanto={state.isPanto}
-        style={{ width: "100%", height: "100%" }}
-        level={state.level}
-        // onIdle={() => {
-        //   if (!isBottomSheetVisible) {
-        //     toggleBottomSheet();
-        //     setSearchBottomModalClose();
-        //   }
-        // }}
-      >
-        {markers?.map((item, index) => (
-          <MapMarker
-            key={index}
-            image={{
-              src: !markerCurious ? "/pin-copy.png" : markerImage,
-              // typeof item.facilityNumber !== "undefined"
-              //   ? item.facilityNumber >= 0 && item.facilityNumber <= 5
-              //     ? `./result-pin/result-pin-${item.facilityNumber}.png`
-              //     : `./result-pin/result-pin-5+.png`
-              //   : `./black-pin.png`,
-              size: !markerCurious ? { width: 25, height: 35 } : markerWH,
-            }}
-            position={{ lat: item.lat, lng: item.lon }}
-            onClick={() => {
-              setState({
-                center: { lat: item.lat, lng: item.lon },
-                level: 4,
-                isPanto: true,
-              });
-              if (markerModalEvent || bottomSheetEvent) {
-                if (
-                  isSearchBottomModalOpen &&
-                  item.name === bottomModalSearchBuilding
-                ) {
-                  setSearchBottomModalClose();
-                  setBottomModalSearchBuilding("");
-                  if (bottomSheetEvent) {
-                    openBottomSheet();
-                  }
-                } else if (
-                  isSearchBottomModalOpen &&
-                  item.name !== bottomModalSearchBuilding
-                ) {
-                  setBottomModalSearchBuilding(item.name!);
-                  setSearchBottomModalOpen();
-                  if (bottomSheetEvent) {
-                    closeBottomSheet();
-                  }
-                } else {
-                  setSearchBottomModalOpen();
-                  setBottomModalSearchBuilding(item.name!);
-                  if (bottomSheetEvent) {
-                    closeBottomSheet();
-                  }
-                }
-              }
-            }}
-          />
-        ))}
-      </Map>
-    </>
-  );
+        return () => clearTimeout(timer);
+    }, []);
+
+    return (
+        <>
+            <Map
+                center={state.center}
+                isPanto={state.isPanto}
+                style={{ width: "100%", height: "100%" }}
+                level={state.level}
+            // onIdle={() => {
+            //   if (!isBottomSheetVisible) {
+            //     toggleBottomSheet();
+            //     setSearchBottomModalClose();
+            //   }
+            // }}
+            >
+                {markers?.map((item, index) => (
+                    <MapMarker
+                        key={index}
+                        image={{
+                            src: !markerCurious ? "/pin-copy.png" : markerImage,
+                            // typeof item.facilityNumber !== "undefined"
+                            //   ? item.facilityNumber >= 0 && item.facilityNumber <= 5
+                            //     ? `./result-pin/result-pin-${item.facilityNumber}.png`
+                            //     : `./result-pin/result-pin-5+.png`
+                            //   : `./black-pin.png`,
+                            size: !markerCurious ? { width: 25, height: 35 } : markerWH,
+                        }}
+                        position={{ lat: item.lat, lng: item.lon }}
+                        onClick={() => {
+                            setState({
+                                center: { lat: item.lat, lng: item.lon },
+                                level: 4,
+                                isPanto: true,
+                            });
+                            if (markerModalEvent || bottomSheetEvent) {
+                                if (
+                                    isSearchBottomModalOpen &&
+                                    item.name === bottomModalSearchBuilding
+                                ) {
+                                    setSearchBottomModalClose();
+                                    setBottomModalSearchBuilding("");
+                                    if (bottomSheetEvent) {
+                                        openBottomSheet();
+                                    }
+                                } else if (
+                                    isSearchBottomModalOpen &&
+                                    item.name !== bottomModalSearchBuilding
+                                ) {
+                                    setBottomModalSearchBuilding(item.name!);
+                                    setSearchBottomModalOpen();
+                                    if (bottomSheetEvent) {
+                                        closeBottomSheet();
+                                    }
+                                } else {
+                                    setSearchBottomModalOpen();
+                                    setBottomModalSearchBuilding(item.name!);
+                                    if (bottomSheetEvent) {
+                                        closeBottomSheet();
+                                    }
+                                }
+                            }
+                        }}
+                    />
+                ))}
+            </Map>
+        </>
+    );
 };
 
 export default KakaoMap;
