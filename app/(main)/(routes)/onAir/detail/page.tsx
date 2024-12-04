@@ -5,7 +5,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { TypesOnAirPlace } from '../onAir';
 import Request from '@/lib/fetch';
 
-import styles from '../../../_components/onair-place/gradient.module.css';
+import styles from '../../../_components/onair/gradient.module.css';
 
 import SpaceNone from '@/public/onAir/space_none.svg';
 import SpaceLow from '@/public/onAir/space_low.svg';

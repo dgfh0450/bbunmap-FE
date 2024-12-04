@@ -15,7 +15,6 @@ export default class Request {
             authorization = `Bearer ${token}`;
         console.log(authorization);
         const url = process.env.NEXT_PUBLIC_API_SERVER_MAIN_URL + path;
-        // const url = 'http://localhost:3000' + path;
         const newHeader = {
             Authorization: authorization,
             'Content-Type': 'application/json',
