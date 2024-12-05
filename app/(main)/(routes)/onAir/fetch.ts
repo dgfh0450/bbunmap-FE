@@ -72,3 +72,8 @@ export const detailCategoryMap: ReadonlyMap<string, string> = new Map([
     ['mood', '분위기'],
     ['socket', '콘센트']
 ]);
+
+export const BuildingTypeMap: ReadonlyMap<string, string> = new Map([
+    ['라운지', 'lounge'],
+    ['카페', 'cafe']
+])
