@@ -15,12 +15,15 @@ import Arrow from '@/public/Arrow.svg';
 import FullModal from "@/app/(main)/_components/FullModal";
 import Kakao from '@/public/kakao_logo.svg';
 import Close from '@/public/onAir/close.svg';
+import OnAirNight from "@/app/(main)/_components/onair/onair-night";
+import OnAirTimeInfoModal from "@/app/(main)/_components/onair/onair-timeinfo-modal";
 
 
 const OnAirVote = () => {
     const [selectedCategory, setSelectedCategory] = useState<TypesBuildingFilter | undefined>();
     const [dropDownOpen, setDropDownOpen] = useState<boolean>(false);
     const [modalOpenLogin, setModalOpenLogin] = useState<boolean>(false);
+    const [modalOpenInfo, setModalOpenInfo] = useState<boolean>(false);
     const { update, data: session, status } = useSession();
 
     const { data: response, error, isLoading } = useQuery<TypeResponseOnAirPlace>({
@@ -36,6 +39,10 @@ const OnAirVote = () => {
 
     const handleModalOpen = () => {
         setModalOpenLogin(!modalOpenLogin);
+    }
+
+    const handleInfoModalOpen = () => {
+        setModalOpenInfo(!modalOpenInfo);
     }
 
 
@@ -76,11 +83,19 @@ const OnAirVote = () => {
                     의 상황을 알려주세요
                     {dropDownOpen && <CustomDropDown onSelect={handleCategory} />}
                 </span>
-                <ul>
-                    {response && response.specificUserRealTimeDTOArr.map((data, idx) =>
-                        <OnAirVoteCard {...data} key={idx} />
-                    )}
-                </ul>
+                {
+                    response?.closestResetTime === 'none' ?
+                        <div className="flex flex-col  items-center mt-2">
+                            <OnAirNight handleModalOpen={handleInfoModalOpen} />
+                        </div>
+                        :
+
+                        <ul>
+                            {response && response.specificUserRealTimeDTOArr.map((data, idx) =>
+                                <OnAirVoteCard {...data} key={idx} />
+                            )}
+                        </ul>
+                }
             </div >
             <FullModal isOpen={modalOpenLogin}>
                 <div className="w-full max-w-[450px] mx-4 rounded-[10px] bg-white p-4 flex flex-col justify-between">
@@ -98,6 +113,10 @@ const OnAirVote = () => {
                         3초 만에 카카오 로그인</button>
                 </div>
             </FullModal>
+            <OnAirTimeInfoModal
+                modalOpen={modalOpenInfo}
+                handleModalOpen={handleInfoModalOpen}
+            />
         </div >
     );
 };
