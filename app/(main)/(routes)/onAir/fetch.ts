@@ -7,7 +7,7 @@ import { getCurrentTime } from "@/lib/date";
 
 export const fetchOnAirPlaceList = (filterType: TypesBuildingFilter | undefined, session: Session | null
 ): Promise<TypeResponseOnAirPlace> => {
-    const request = new Request(session?.accessToken);
+    const request = new Request(session);
     if (filterType === undefined) {
         return request.get('/api/realTime/places');
     }
@@ -20,7 +20,7 @@ export const getOnAirPlace = (placeName: string | null, session: Session | null
 ): Promise<TypesOnAirPlace> => {
     if (!placeName) throw new Error('없는 장소 입니다.')
 
-    const request = new Request(session?.accessToken);
+    const request = new Request(session);
     return request.get(`/api/realTime?place=${placeName}`);
 }
 
@@ -42,7 +42,7 @@ export const fetchVote = async (value: number, placeName: string, session: Sessi
 
 
     if (!session) throw new LoginError('로그인이 필요합니다.');
-    const request = new Request(session.accessToken);
+    const request = new Request(session);
 
     const currentTimeISO = getCurrentTime();
     if (value == -1) throw new Error('값을 설정해주세요!');
@@ -58,7 +58,7 @@ export const fetchVote = async (value: number, placeName: string, session: Sessi
 
 export const fetchLike = (placeName: string, session: Session | null): Promise<boolean> => {
     if (!session) throw new LoginError('로그인이 필요합니다.');
-    const request = new Request(session.accessToken);
+    const request = new Request(session);
     console.log(placeName);
     return request.post(`/secured/user/favoritePlace?place=${placeName}`);
 }
