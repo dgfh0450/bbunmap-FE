@@ -134,7 +134,6 @@ const Building = () => {
         "stationeryStoreName",
     ];
 
-    if (facilityIsPending) return <FacSkeleton />;
 
     const groupedFacilities = facilityData?.reduce(
         (acc: any, buildingInfo: BuildingInfo) => {
@@ -203,45 +202,95 @@ const Building = () => {
             <div className='mx-4'>
                 <div className='flex flex-row justify-between items-center mb-[11px]'>
                     <button onClick={() => router.back()}><Arrow stroke='#000000' width={12} height={22.5} strokeWidth={0.6} className=' rotate-180 translate-x-[20%]' /></button>
-                    <Link className="bg-[#E9EBED] font-semibold text-xs flex items-center px-[10px] py-[7px] rounded-full" href={`/home?buildingName=${buildingName}`}><Document className="mr-1.5" />건물 위치 보기</Link>
+                    <Link className="bg-[#E9EBED] font-semibold text-xs flex items-center px-[10px] py-[7px] rounded-full" href={`/home?buildingName=${buildingName}`}><Document className="mr-1.5" />건물 위치보기</Link>
                 </div>
                 <div className="w-full flex">
-                    <button onClick={() => { setSelectedMenu('list') }} className={cn('w-full py-[9px] rounded-[7px]', selectedMenu == 'list' ? 'bg-black text-white font-medium text-[15px]' : 'bg-white text-gray-500')} >공간목록</button>
-                    <button onClick={() => { setSelectedMenu('floormap') }} className={cn('w-full py-[9px] rounded-[7px]', selectedMenu == 'floormap' ? 'bg-black text-white font-medium text-[15px]' : 'bg-white text-gray-500')} >실내지도</button>
+                    <button onClick={() => { setSelectedMenu('list') }} className={cn('w-full py-[9px] rounded-[7px]', selectedMenu == 'list' ? 'bg-black text-white font-medium text-[15px]' : 'bg-white text-gray-500 text-[15px]')} >공간목록</button>
+                    <button onClick={() => { setSelectedMenu('floormap') }} className={cn('w-full py-[9px] rounded-[7px]', selectedMenu == 'floormap' ? 'bg-black text-white font-medium text-[15px]' : 'bg-white text-gray-500 text-[15px]')} >실내지도</button>
                 </div>
             </div>
-            <div>
-                {selectedMenu === "list" &&
-                    facilitiesByFloor.map((buildingInfo: any, index: number) => {
-                        console.log(index, buildingInfo);
-                        return (
-                            <FloorFactilities
-                                buildingName={buildingInfo.buildingName}
-                                floor={buildingInfo.floor}
-                                facilities={buildingInfo.facilities}
-                                key={`${buildingInfo.floor} ${buildingName}`}
-                                urlType={urlType}
-                                facFloor={buildingInfo.floor}
-                            />
-                        );
-                    })}
-                {selectedMenu === "floormap" &&
-                    facilitiesByFloor.map((value: any, index) => {
-                        console.log(index, value);
-                        return (
-                            <TitleImage
-                                key={index}
-                                titleImage={[
+            {
+                facilityIsPending ?
+                    <div>
+                        <div className="flex flex-col justify-start mt-4">
+                            {selectedMenu === "list" ?
+                                <>
                                     {
-                                        title: `${value.floorMap.floor}층`,
-                                        imageSrc: value.floorMap.image,
-                                    },
-                                ]}
-                                titleBackground={true}
-                            />
-                        );
-                    })}
-            </div>
+                                        Array(3).fill(0).map((el, index) =>
+                                            <div key={`b-list-skeleton-${index}`}>
+                                                <Skeleton className="h-[40px] w-full rounded-none" />
+                                                <div className="flex flex-row justify-between items-center flex-wrap px-4 pt-[10px] mb-[14px]">
+                                                    <div
+                                                        className="flex-col flex items-start justify-start w-[48%] overflow-hidden cursor-pointer mb-9"
+                                                    >
+                                                        <Skeleton className="relative w-full h-[120px] rounded-[5px] overflow-hidden mb-2" />
+                                                        <Skeleton className="h-[24.5px] w-[50%] font-medium overflow-hidden whitespace-nowrap text-overflow-ellipsis mb-1" />
+                                                        <Skeleton className="h-[23px] w-[30%] text-[#A0A4A8]" />
+                                                    </div>
+                                                    <div
+                                                        className="flex-col flex items-start justify-start w-[48%] overflow-hidden cursor-pointer mb-9"
+                                                    >
+                                                        <Skeleton className="relative w-full h-[120px] rounded-[5px] overflow-hidden mb-2" />
+                                                        <Skeleton className="h-[24.5px] w-[50%] font-medium overflow-hidden whitespace-nowrap text-overflow-ellipsis mb-1" />
+                                                        <Skeleton className="h-[23px] w-[30%] text-[#A0A4A8]" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )
+                                    }
+                                </>
+                                :
+                                <>
+                                    {
+                                        Array(3).fill(0).map((el, index) =>
+                                            <div key={`b-floor-skeleton-${index}`}>
+                                                <div className="flex flex-col justify-start items-start " >
+                                                    <Skeleton className="h-[40px] w-full rounded-none" />
+                                                    <Skeleton className="w-full h-[200px] flex flex-col px-4 mb-[60px] mt-3 justify-start rounded-none" />
+                                                </div>
+                                            </div>
+                                        )
+                                    }
+                                </>
+
+                            }
+
+                        </div >
+                    </div >
+                    :
+                    <div>
+                        {selectedMenu === "list" &&
+                            facilitiesByFloor.map((buildingInfo: any, index: number) => {
+                                console.log(index, buildingInfo);
+                                return (
+                                    <FloorFactilities
+                                        buildingName={buildingInfo.buildingName}
+                                        floor={buildingInfo.floor}
+                                        facilities={buildingInfo.facilities}
+                                        key={`${buildingInfo.floor} ${buildingName}`}
+                                        urlType={urlType}
+                                        facFloor={buildingInfo.floor}
+                                    />
+                                );
+                            })}
+                        {selectedMenu === "floormap" &&
+                            facilitiesByFloor.map((value: any, index) => {
+                                console.log(index, value);
+                                return (
+                                    <TitleImage
+                                        key={index}
+                                        titleImage={[
+                                            {
+                                                title: `${value.floorMap.floor}층`,
+                                                imageSrc: value.floorMap.image,
+                                            },
+                                        ]}
+                                        titleBackground={true}
+                                    />
+                                );
+                            })}
+                    </div>
+            }
         </div >
     );
 };
