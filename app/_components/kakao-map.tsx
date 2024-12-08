@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { Map, MapMarker } from "react-kakao-maps-sdk";
 import Cookies from "js-cookie";
 import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 
 export const KAKAO_SDK_URL = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_APP_JS_KEY}&autoload=false`;
 
@@ -39,7 +40,6 @@ const KakaoMap = ({
     bottomSheetEvent,
     markerCurious,
 }: KakaoMapProps) => {
-    const router = useSearchParams();
     const [state, setState] = useState({
         // 지도의 초기 위치
         center: { lat: 37.58379268032499, lng: 127.02954409489267 },
@@ -61,6 +61,7 @@ const KakaoMap = ({
         openBottomSheet,
     } = useBottomSheetStore(); // Zustand store 사용
 
+    const router = useRouter();
     const [markerImage, setMarkerImage] = useState<string>("/icons/tooltip.svg");
     const [markerWH, setMarkerWH] = useState({ width: 130, height: 74 });
     const params = useSearchParams();
@@ -80,7 +81,9 @@ const KakaoMap = ({
     useEffect(() => {
         const buildingName = params.get('buildingName')
         if (buildingName) {
-            moveToBuilding(buildingName)
+            moveToBuilding(buildingName);
+            closeBottomSheet();
+            setBottomModalSearchBuilding(buildingName);
         }
         console.log('params ----------------> ', buildingName);
     }, [params])
@@ -133,6 +136,9 @@ const KakaoMap = ({
                                 level: 4,
                                 isPanto: true,
                             });
+                            if (params.get('buildingName')) {
+                                router.push('/home');
+                            }
                             if (markerModalEvent || bottomSheetEvent) {
                                 if (
                                     isSearchBottomModalOpen &&

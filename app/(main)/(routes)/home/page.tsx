@@ -63,12 +63,12 @@ export default function Home() {
     };
 
 
-    useEffect(() => {
-        setTab("home");
-        // setSearchModalClose();
-        openBottomSheet();
-        console.log("loc", locationData);
-    }, [locationData, openBottomSheet, setTab]);
+    // useEffect(() => {
+    //     setTab("home");
+    //     // setSearchModalClose();
+    //     openBottomSheet();
+    //     console.log("loc", locationData);
+    // }, [locationData, openBottomSheet, setTab]);
 
     return (
         <div className="w-full max-w-[450px] h-full left-0 top-0">
