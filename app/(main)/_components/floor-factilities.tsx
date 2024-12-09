@@ -30,7 +30,7 @@ export const FloorFactilities = ({
     //     facFloor
     //   );
     // }, [buildInfo, buildingName, facFloor, facilities, floor, urlType]);
-
+    if (facilities.length == 0) return;
     return (
         <div className="flex flex-col justify-start mt-4">
             <p className="font-medium flex justify-between items-center text-gray-500 py-2 w-full text-base bg-gray-50 pl-[22px]">{floor}층</p>
