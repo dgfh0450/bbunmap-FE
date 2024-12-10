@@ -27,7 +27,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 export default function OnAirResultDetail() {
     const params = useSearchParams();
     const queryPlace = params.get("place");
-    const { status: statusSession, data: session } = useSession();
+    const { update, status: statusSession, data: session } = useSession();
 
     const { status: statusPlace, data: place, error, refetch } = useQuery({
         queryKey: [queryPlace],
@@ -47,7 +47,7 @@ export default function OnAirResultDetail() {
     });
 
     const { data: responseLike, error: errorLike, status: statusLike, mutate } = useMutation({
-        mutationFn: () => fetchLike(placeName, session),
+        mutationFn: () => fetchLike(placeName, session, update),
         onSuccess: () => {
             refetch();
         },

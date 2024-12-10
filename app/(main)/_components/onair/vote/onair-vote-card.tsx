@@ -16,7 +16,7 @@ export default function OnAirVoteCard(data: TypesOnAirPlace) {
     const { update, data: session, status: statusSession } = useSession();
 
     const { status: voteStatus, data: postResult, error: error, mutate } = useMutation({
-        mutationFn: () => fetchVote(value, placeName, session),
+        mutationFn: () => fetchVote(value, placeName, session, update),
         onError: (e) => {
             if (e instanceof LoginError) {
                 console.log('login error');
