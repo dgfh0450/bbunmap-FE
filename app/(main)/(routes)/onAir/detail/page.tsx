@@ -31,7 +31,8 @@ export default function OnAirResultDetail() {
 
     const { status: statusPlace, data: place, error, refetch } = useQuery({
         queryKey: [queryPlace],
-        queryFn: () => getOnAirPlace(queryPlace, session)
+        queryFn: () => getOnAirPlace(queryPlace, session),
+        throwOnError: true,
     });
 
     const { status: statusDetail, data: detail, error: errorDetail } = useQuery({
@@ -43,6 +44,7 @@ export default function OnAirResultDetail() {
                 throw new Error('Invalid placeType');
             }
         },
+        throwOnError: true,
         enabled: !!place
     });
 
@@ -56,9 +58,9 @@ export default function OnAirResultDetail() {
             else return false;
         }
     })
-    if (statusPlace == 'error' || statusDetail == 'error') return <div>error</div>
+
+    if (statusPlace == 'error' || statusDetail == 'error') throw new Error('Not Found')
     if (statusPlace == 'pending' || statusDetail == 'pending') return <DetailSkeleton />
-    if (!queryPlace || !place || !detail || error) return <div>no place</div>
 
     const { buildingName, floor, placeName, placeType, vote, result, like, voteAvailable } = place;
 
