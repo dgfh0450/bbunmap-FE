@@ -15,15 +15,16 @@ import Arrow from '@/public/Arrow.svg';
 import FullModal from "@/app/(main)/_components/FullModal";
 import Kakao from '@/public/kakao_logo.svg';
 import Close from '@/public/onAir/close.svg';
+import { LoadingComponent, RefetchComponent } from "@/app/(main)/_components/fetch-component";
 
 
 const OnAirVote = () => {
     const [selectedCategory, setSelectedCategory] = useState<TypesBuildingFilter | undefined>();
     const [dropDownOpen, setDropDownOpen] = useState<boolean>(false);
     const [modalOpenLogin, setModalOpenLogin] = useState<boolean>(false);
-    const { update, data: session, status } = useSession();
+    const { update, data: session, status: statusSession } = useSession();
 
-    const { data: response, error, isLoading } = useQuery<TypeResponseOnAirPlace>({
+    const { data: response, error, status: status, refetch } = useQuery<TypeResponseOnAirPlace>({
         queryKey: ['buildingCategory', selectedCategory?.value],
         queryFn: () => fetchOnAirPlaceList(selectedCategory, session, update),
         staleTime: 300000,
@@ -68,7 +69,7 @@ const OnAirVote = () => {
                     <p className="absolute right-0 bottom-0 text-gray-500 font-regular text-[11px] translate-y-[100%]" >15/20</p>
                 </div>
             </div>
-            <div className="w-full min-h-full bg-[#F8F8F8] overflow-y-scroll scrollbar-hide rounded-t-[30px] p-[15px]">
+            <div className="w-full h-full min-h-full bg-[#F8F8F8] overflow-y-scroll scrollbar-hide rounded-t-[30px] p-[15px]">
                 <span className="text-sm font-regular text-gray-500 relative flex">
                     <button className="font-medium text-[15px] text-black mx-[6px] flex items-center"
                         onClick={handleDropDown}>
@@ -78,11 +79,18 @@ const OnAirVote = () => {
                     의 상황을 알려주세요
                     {dropDownOpen && <CustomDropDown onSelect={handleCategory} />}
                 </span>
-                <ul>
-                    {response && response.specificUserRealTimeDTOArr.map((data, idx) =>
-                        <OnAirVoteCard {...data} key={idx} />
-                    )}
-                </ul>
+                {
+                    {
+                        'error': <RefetchComponent message="투표 가능한 목록을 불러오지 못했어요" refetch={refetch} />,
+                        'success':
+                            <ul>
+                                {response && response.specificUserRealTimeDTOArr.map((data, idx) =>
+                                    <OnAirVoteCard {...data} key={idx} />
+                                )}
+                            </ul>,
+                        'pending': <LoadingComponent message="투표 목록을 불러오고 있어요" />
+                    }[status]
+                }
             </div >
             <FullModal isOpen={modalOpenLogin}>
                 <div className="w-full max-w-[450px] mx-4 rounded-[10px] bg-white p-4 flex flex-col justify-between">

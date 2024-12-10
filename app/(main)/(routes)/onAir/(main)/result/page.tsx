@@ -22,12 +22,13 @@ import FullModal from "@/app/(main)/_components/FullModal";
 import Moon from '@/public/onAir/Moon.svg';
 import Connector from '@/public/onAir/connector.svg';
 import { buildingList, typeList } from "../../fetch";
+import { LoadingComponent, RefetchComponent } from "@/app/(main)/_components/fetch-component";
 
 const OnAirResult = () => {
     const [selectedCategory, setSelectedCategory] = useState<TypesBuildingFilter | undefined>();
     const [modalOpenInfo, setModalOpenInfo] = useState<boolean>(false);
-    const { update, data: session, status } = useSession();
-    const { data: response, error, isLoading } = useQuery<TypeResponseOnAirPlace>({
+    const { update, data: session, status: statusSession } = useSession();
+    const { data: response, error, status, refetch } = useQuery<TypeResponseOnAirPlace>({
         queryKey: ['buildingCategory', selectedCategory],
         queryFn: () => fetchOnAirPlaceList(selectedCategory, session),
         staleTime: 300000,
@@ -95,20 +96,29 @@ const OnAirResult = () => {
             </div>
             <div className="w-full flex flex-col justify-start items-center  px-[15px]" >
                 <p className="w-full font-semibold text-xl text-black mt-[42px] mb-[6px] ml-l">지금 빈 공간</p>
-                <button
-                    onClick={handleModalOpen}
-                    className="w-full bg-[#F3F4F5] rounded-lg flex justify-between p-[10px] mt-[5px] font-regular text-gray-500 text-xs">
-                    <span className="flex items-center"><Clock className="m-[3px]" />{response?.closestResetTime}부터 현재까지 집계된 결과에요</span> <DotMenu />
-                </button>
-                <ul className="w-full">
+                {
                     {
-                        response && response.specificUserRealTimeDTOArr.map((data: TypesOnAirPlace, index: number) => {
-                            return (
-                                <li key={`onair-place-card-${index}`} className="mt-3"><OnAirPlaceCard {...data} /></li>
-                            )
-                        })
-                    }
-                </ul>
+                        'error': <RefetchComponent message="결과 목록을 불러오지 못했어요" refetch={refetch} className="pt-[10%]" />,
+                        'success':
+                            <>
+                                <button
+                                    onClick={handleModalOpen}
+                                    className="w-full bg-[#F3F4F5] rounded-lg flex justify-between p-[10px] mt-[5px] font-regular text-gray-500 text-xs">
+                                    <span className="flex items-center"><Clock className="m-[3px]" />{response?.closestResetTime}부터 현재까지 집계된 결과에요</span> <DotMenu />
+                                </button>
+                                <ul className="w-full">
+                                    {
+                                        response && response.specificUserRealTimeDTOArr.map((data: TypesOnAirPlace, index: number) => {
+                                            return (
+                                                <li key={`onair-place-card-${index}`} className="mt-3"><OnAirPlaceCard {...data} /></li>
+                                            )
+                                        })
+                                    }
+                                </ul>
+                            </>,
+                        'pending': <LoadingComponent message="결과 목록을 불러오고 있어요" className="pt-[10%]" />
+                    }[status]
+                }
             </div>
             <FullModal isOpen={modalOpenInfo}>
                 <div className="text-[19px] w-full max-w-[450px] h-[400px] mx-4 p-4 bg-white rounded-[10px]">

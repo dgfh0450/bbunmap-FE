@@ -44,7 +44,7 @@ export const fetchVote = async (value: number, placeName: string, session: Sessi
 
 
     if (!session) throw new LoginError('로그인이 필요합니다.');
-    const request = new Request(session, update);
+    const request = new Request(session);
 
     const currentTimeISO = getCurrentTime();
     if (value == -1) throw new Error('값을 설정해주세요!');

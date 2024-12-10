@@ -5,6 +5,7 @@ import FullModal from '@/app/(main)/_components/FullModal';
 import Close from '@/public/onAir/close.svg';
 import Kakao from '@/public/kakao_logo.svg';
 import { signIn } from 'next-auth/react';
+import LoginError from './onAir/CustomError';
 
 type Props = {
     children: ReactNode;
@@ -18,8 +19,11 @@ class ErrorBoundary extends Component<Props, State> {
         hasError: false,
     };
 
-    static getDerivedStateFromError(): State {
-        return { hasError: true };
+    static getDerivedStateFromError(error: Error): State {
+        if (error instanceof LoginError)
+            return { hasError: true };
+        else
+            return { hasError: false }
     }
 
     componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
