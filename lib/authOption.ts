@@ -30,7 +30,6 @@ const authOptions: NextAuthOptions = {
                 });
 
                 const { accessToken, refreshToken } = response;
-
                 user.accessToken = accessToken;
                 user.refreshToken = refreshToken;
                 return true;

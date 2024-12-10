@@ -7,7 +7,6 @@ import MyCurious from "@/public/icons/my_curious.svg";
 import { useRouter } from "next/navigation";
 import { useTabBarStore } from "@/hooks/useTabBar";
 import { ReactNode, useEffect } from "react";
-import { useStoreLoginState } from "@/hooks/useStoreLoginState";
 import Link from "next/link";
 
 const MyPageMenu = ({ link, children }: { link: string, children: ReactNode }) => {
@@ -23,7 +22,6 @@ const MyPageMenu = ({ link, children }: { link: string, children: ReactNode }) =
 
 const MyPage = () => {
     const { data: session, status } = useSession();
-    const { isSaving, setIsSaving, state, setState, resetState } = useStoreLoginState();
     const { setTab } = useTabBarStore();
 
     useEffect(() => {
@@ -35,7 +33,6 @@ const MyPage = () => {
     }
 
     const handleLogOut = () => {
-        resetState();
         signOut();
     }
 
