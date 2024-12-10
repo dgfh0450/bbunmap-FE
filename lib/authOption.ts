@@ -39,14 +39,22 @@ const authOptions: NextAuthOptions = {
             }
         },
 
-        async jwt({ token, user }: { token: JWT; user?: User }): Promise<JWT> {
-            if (user) {
+        async jwt({ token, user, trigger, session }: {
+            token: JWT;
+            user: User;
+            account: Account | null;
+            trigger?: "signIn" | "signUp" | "update";
+            isNewUser?: boolean;
+            session?: any;
+        }): Promise<JWT> {
+
+            if (trigger === 'update') {
+                console.log(session);
+                token.accessToken = session.accessToken;
+            }
+            else if (user) {
                 token.accessToken = user.accessToken;
                 token.refreshToken = user.refreshToken;
-            }
-
-            if (!token.accessToken) {
-                console.error("No accessToken in token:", token);
             }
 
             return token;

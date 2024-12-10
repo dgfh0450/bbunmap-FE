@@ -7,7 +7,7 @@ import Request from "@/lib/fetch";
 import { TypeResponseOnAirPlace, TypesBuildingFilter, TypesOnAirPlace } from "../onAir";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import OnAirVoteCard from "../../../_components/onair/vote/onair-vote-card";
-import { signIn, useSession } from "next-auth/react";
+import { signIn, useSession, } from "next-auth/react";
 import { fetchOnAirPlaceList } from "../fetch";
 import CustomDropDown from "@/app/(main)/_components/onair/vote/custom-dropdown";
 import Triangle from '@/public/rounded-triangle.svg';
@@ -26,7 +26,7 @@ const OnAirVote = () => {
 
     const { data: response, error, status: status, refetch } = useQuery<TypeResponseOnAirPlace>({
         queryKey: ['buildingCategory', selectedCategory?.value],
-        queryFn: () => fetchOnAirPlaceList(selectedCategory, session),
+        queryFn: () => fetchOnAirPlaceList(selectedCategory, session, update),
         staleTime: 300000,
         refetchInterval: 300000,
     });
@@ -45,6 +45,7 @@ const OnAirVote = () => {
         setDropDownOpen(false);
     }
 
+    console.log(session);
 
     return (
         <div className="w-full flex-1 overflow-y-scroll scrollbar-hide">

@@ -5,9 +5,9 @@ import LoginError from "./CustomError";
 import { getCurrentLocation } from "@/hooks/useGeoLocations";
 import { getCurrentTime } from "@/lib/date";
 
-export const fetchOnAirPlaceList = (filterType: TypesBuildingFilter | undefined, session: Session | null
+export const fetchOnAirPlaceList = (filterType: TypesBuildingFilter | undefined, session: Session | null, update?: (data: any) => Promise<Session | null>
 ): Promise<TypeResponseOnAirPlace> => {
-    const request = new Request(session);
+    const request = new Request(session, update);
     if (filterType === undefined) {
         return request.get('/api/realTime/places');
     }
@@ -16,15 +16,17 @@ export const fetchOnAirPlaceList = (filterType: TypesBuildingFilter | undefined,
     }
 };
 
-export const getOnAirPlace = (placeName: string | null, session: Session | null
+export const getOnAirPlace = (placeName: string | null, session: Session | null, update?: (data: any) => Promise<Session | null>
 ): Promise<TypesOnAirPlace> => {
     if (!placeName) throw new Error('없는 장소 입니다.')
 
-    const request = new Request(session);
+    const request = new Request(session, update);
     return request.get(`/api/realTime?place=${placeName}`);
 }
 
-export const getPlaceDetail = <T extends '카페' | '라운지'>(buildingName: string | null, placeName: string | null, type: T): Promise<T extends '카페' ? TypesCafeDetail : TypesLoungeDetail> => {
+export const getPlaceDetail = <T extends '카페' | '라운지'>(buildingName: string | null, placeName: string | null, type: T, update?: (data: any) => Promise<Session | null>
+
+): Promise<T extends '카페' ? TypesCafeDetail : TypesLoungeDetail> => {
     const request = new Request();
     if (!placeName || !buildingName) throw new Error('올바르지 않은 대상입니다.')
     if (type === '카페') {
@@ -37,7 +39,7 @@ export const getPlaceDetail = <T extends '카페' | '라운지'>(buildingName: s
     }
 };
 
-export const fetchVote = async (value: number, placeName: string, session: Session | null): Promise<any> => {
+export const fetchVote = async (value: number, placeName: string, session: Session | null, update: (data: any) => Promise<Session | null>): Promise<any> => {
     const { longitude, latitude } = await getCurrentLocation();
 
 
@@ -56,9 +58,10 @@ export const fetchVote = async (value: number, placeName: string, session: Sessi
     });
 }
 
-export const fetchLike = (placeName: string, session: Session | null): Promise<boolean> => {
+export const fetchLike = (placeName: string, session: Session | null, update: (data: any) => Promise<Session | null>
+): Promise<boolean> => {
     if (!session) throw new LoginError('로그인이 필요합니다.');
-    const request = new Request(session);
+    const request = new Request(session, update);
     console.log(placeName);
     return request.post(`/secured/user/favoritePlace?place=${placeName}`);
 }

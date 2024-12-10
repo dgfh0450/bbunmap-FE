@@ -1,13 +1,15 @@
 import { Session } from "next-auth";
-import { signOut } from "next-auth/react";
+import { signIn, signOut } from "next-auth/react";
 
 export default class Request {
     accessToken?: string;
     refreshToken?: string;
+    update?: (data: any) => Promise<Session | null>;
 
-    constructor(session?: Session | null) {
+    constructor(session?: Session | null, update?: (data: any) => Promise<Session | null>) {
         this.accessToken = session?.accessToken;
         this.refreshToken = session?.refreshToken;
+        this.update = update;
     }
 
     fetch = async (path: string, method: 'GET' | 'POST', body?: any, header: Record<string, any> = {}) => {
@@ -44,32 +46,48 @@ export default class Request {
                 //Error 메세지
                 const error = await response.json()
 
-                //token invalid or expired
                 if (response.status == 401) {
-                    ////TODO
-                    // if (error === 'Invalid token') {
-                    //     signOut();
-                    // }
-                    // else {
-                    //     if (this.refreshToken) {
+                    if (error === 'Invalid token') {
+                        signOut();
+                    }
+                    else {
+                        if (this.refreshToken && this.update) {
+                            try {
+                                const responseToken = await fetch(process.env.NEXT_PUBLIC_API_SERVER_MAIN_URL + '/api/newAccess',
+                                    {
+                                        method: "POST",
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                        },
+                                        body: JSON.stringify({
+                                            "refreshToken": this.refreshToken
+                                        })
+                                    }
+                                )
+                                const newAccessToken = await responseToken.text();
 
-                    //         try {
-                    //             const response = await fetch(process.env.NEXT_PUBLIC_API_SERVER_MAIN_URL + '/api/newAccess',
-                    //                 {
-                    //                     method: 'POST',
-                    //                     body: JSON.stringify({
-                    //                         refreshToken: this.refreshToken
-                    //                     })
-                    //                 }
-                    //             )
-                    //             const newAccessToken = await response.json();
+                                const newHeader = {
+                                    Authorization: newAccessToken,
+                                    'Content-Type': 'application/json',
+                                    ...header
+                                };
 
-                    //         }
-                    //         catch (err) {
+                                const newOptions: RequestInit = {
+                                    method: method,
+                                    headers: newHeader,
+                                };
 
-                    //         }
-                    //     }
-                    // }
+                                const response = await fetch(url, newOptions);
+                                this.update({ accessToken: newAccessToken });
+                                return await response.json();
+                            }
+                            catch (err) {
+                                signOut();
+                                console.log('new error :', err)
+                                throw err;
+                            }
+                        }
+                    }
                 }
                 //Error 메세지 괄호 제거
                 //ex) [밤 10시부터 아침 6시까지는 투표를 받고 있지 않습니다]
