@@ -2,13 +2,7 @@
 import Link from 'next/link';
 import ErrorIcon from '@/public/Error.svg';
 
-export default function Error({
-    error,
-    reset,
-}: {
-    error: Error & { digest?: string }
-    reset: () => void
-}) {
+export default function Error() {
 
     return (
         <div className="w-full max-w-[450px] h-screen py-[60px] px-4 mx-auto relative flex flex-col justify-between " >
