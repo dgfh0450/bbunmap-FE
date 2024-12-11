@@ -16,6 +16,9 @@ import FullModal from "@/app/(main)/_components/FullModal";
 import Kakao from '@/public/kakao_logo.svg';
 import Close from '@/public/onAir/close.svg';
 import { LoadingComponent, RefetchComponent } from "@/app/(main)/_components/fetch-component";
+import { getUserInfo } from "../../my/fetch";
+import { calculateLevel, levelIntervals, levelTexts, maxUserLevel } from "@/lib/userLevel";
+import SpeechBubble from "@/app/(main)/_components/onair/vote/SpeechBubble";
 
 
 const OnAirVote = () => {
@@ -23,6 +26,11 @@ const OnAirVote = () => {
     const [dropDownOpen, setDropDownOpen] = useState<boolean>(false);
     const [modalOpenLogin, setModalOpenLogin] = useState<boolean>(false);
     const { update, data: session, status: statusSession } = useSession();
+    const { data: userInfo, status: statusUserInfo, error: errorUserInfo } = useQuery({
+        queryKey: ['userInfo'],
+        queryFn: () => getUserInfo(session, update),
+        enabled: statusSession === 'authenticated'
+    })
 
     const { data: response, error, status: status, refetch } = useQuery<TypeResponseOnAirPlace>({
         queryKey: ['buildingCategory', selectedCategory?.value],
@@ -46,29 +54,70 @@ const OnAirVote = () => {
         setDropDownOpen(false);
     }
 
-    console.log(session);
-
+    const [level, remain] = calculateLevel(userInfo?.numOfRealTimeVote);
     return (
         <div className="w-full flex-1 overflow-y-scroll scrollbar-hide">
             <div className="w-auto flex flex-col items-center justify-between mt-5 px-6 mb-10">
-                <div className="w-full flex flex-row justify-between">
-                    <div className="h-auto flex flex-col justify-around py-2">
-                        <button
-                            onClick={handleModalOpen}
-                            className="self-start font-regular rounded-full text-[12px] pl-3 pr-2 py-[5.5px] bg-[#FFF8B7] border border-[#E8DA5D] flex items-center">
-                            로그인이 필요해요 <Arrow stroke="#000000" strokeWidth={0.6} width={6} height={12} className="mx-[5px]" />
-                        </button>
-                        <p className="font-bold text-[25px]">🗳️ 10회</p>
-                        <p className="font-regular text-[13px] text-gray-500">5번 더 투표하면 Level 2</p>
-                    </div>
-                    <Image src='/onAir/vote_header.png' width={140} height={132} alt="vote header" className="translate-y-[15px] translate-x-[-15px]" />
-                </div>
-                <div className="w-full h-[12px] rounded-full bg-[#ededed] relative">
-                    <div className={cn("absolute border-[6px] rounded-full border-[#EFED63]",
-                        "w-[50%]"
-                    )} />
-                    <p className="absolute right-0 bottom-0 text-gray-500 font-regular text-[11px] translate-y-[100%]" >15/20</p>
-                </div>
+                {
+                    userInfo ?
+                        <div className="w-full flex flex-row justify-between">
+                            <div className="flex-1 h-auto flex flex-col justify-around py-2">
+                                <div className="self-start font-regular rounded-full text-[12px] pl-3 pr-2 py-[5.5px] border border-gray-50 bg-gray-50 text-gray-500 flex items-center">
+                                    누적 투표 횟수
+                                </div>
+                                <p className="font-bold text-[25px]">🗳️ {userInfo.numOfRealTimeVote}회</p>
+                                {
+                                    level === maxUserLevel ?
+                                        <>
+                                            <p className="font-regular text-[13px] text-gray-500 my-3">Lv. {level} 달성! 다른 동물을 키울 수 있어요</p>
+                                            <div className="w-full h-[12px] rounded-full bg-[#ededed] relative">
+                                                <div className={cn("absolute border-[6px] rounded-full border-[#EFED63]")}
+                                                    style={{ width: `5%` }}
+                                                />
+                                                <p className="absolute right-0 bottom-[-4px] text-gray-500 font-regular text-[11px] translate-y-[100%]" >Coming Soon</p>
+                                            </div>
+                                        </>
+                                        :
+                                        <>
+                                            <p className="font-regular text-[13px] text-gray-500 my-3">{remain}번 더 투표하면 Level {level + 1}</p>
+                                            <div className="w-full h-[12px] rounded-full bg-[#ededed] relative">
+                                                <div className={cn("absolute border-[6px] rounded-full border-[#EFED63]")}
+                                                    style={{ width: `${100 * (levelIntervals[maxUserLevel - level] - remain) / levelIntervals[maxUserLevel - level]}%` }}
+                                                />
+                                                <p className="absolute right-0 bottom-[-4px] text-gray-500 font-regular text-[11px] translate-y-[100%]" >{levelIntervals[maxUserLevel - level] - remain}/{levelIntervals[maxUserLevel - level]}</p>
+                                            </div>
+                                        </>
+                                }
+                            </div>
+                            <div className="w-[104px]  flex flex-col items-center">
+                                <SpeechBubble text={levelTexts[level]} />
+                                <Image src={`/my/vote-character/character-lv${level}.png`} width={104} height={135} alt="vote-character" className="" />
+                            </div>
+                        </div>
+                        :
+                        <div className="w-full flex flex-row justify-between">
+                            <div className="w-full h-auto flex flex-col justify-around py-2">
+                                <button
+                                    onClick={handleModalOpen}
+                                    className="self-start font-regular rounded-full text-[12px] pl-3 pr-2 py-[5.5px] bg-[#FFF8B7] border border-[#E8DA5D] flex items-center">
+                                    로그인이 필요해요 <Arrow stroke="#000000" strokeWidth={0.6} width={6} height={12} className="mx-[5px]" />
+                                </button>
+                                <p className="font-bold text-[25px]">🗳️ 0회</p>
+                                <p className="font-regular text-[13px] text-gray-500">? 번 더 투표하면 Level 5</p>
+
+                                <div className="w-full h-[12px] rounded-full bg-[#ededed] relative">
+                                    <div className={cn("absolute border-[6px] rounded-full border-[#EFED63]")}
+                                        style={{ width: `${100 * remain / levelIntervals[maxUserLevel - level]}%` }}
+                                    />
+                                    <p className="absolute right-0 bottom-0 text-gray-500 font-regular text-[11px] translate-y-[100%]" >0/0</p>
+                                </div>
+                            </div>
+                            <div className="w-[104px]  flex flex-col items-center">
+                                <SpeechBubble text={levelTexts[level]} />
+                                <Image src={`/my/vote-character/character-lv${level}.png`} width={104} height={135} alt="vote-character" className="" />
+                            </div>
+                        </div>
+                }
             </div>
             <div className="w-full h-full min-h-full bg-[#F8F8F8] overflow-y-scroll scrollbar-hide rounded-t-[30px] p-[15px]">
                 <span className="text-sm font-regular text-gray-500 relative flex">
