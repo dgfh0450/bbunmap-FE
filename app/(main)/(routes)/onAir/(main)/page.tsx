@@ -82,16 +82,18 @@ const OnAirVote = () => {
                                             <p className="font-regular text-[13px] text-gray-500 my-3">{remain}번 더 투표하면 Level {level + 1}</p>
                                             <div className="w-full h-[12px] rounded-full bg-[#ededed] relative">
                                                 <div className={cn("absolute border-[6px] rounded-full border-[#EFED63]")}
-                                                    style={{ width: `${100 * (levelIntervals[maxUserLevel - level] - remain) / levelIntervals[maxUserLevel - level]}%` }}
+                                                    style={{
+                                                        width: `${100 * userInfo.numOfRealTimeVote / levelIntervals[maxUserLevel - level - 1]}%`
+                                                    }}
                                                 />
-                                                <p className="absolute right-0 bottom-[-4px] text-gray-500 font-regular text-[11px] translate-y-[100%]" >{levelIntervals[maxUserLevel - level] - remain}/{levelIntervals[maxUserLevel - level]}</p>
+                                                <p className="absolute right-0 bottom-[-4px] text-gray-500 font-regular text-[11px] translate-y-[100%]" >{userInfo.numOfRealTimeVote}/{levelIntervals[maxUserLevel - level - 1]}</p>
                                             </div>
                                         </>
                                 }
                             </div>
                             <div className="w-[104px]  flex flex-col items-center">
                                 <SpeechBubble text={levelTexts[level]} />
-                                <Image src={`/my/vote-character/character-lv${level}.png`} width={104} height={135} alt="vote-character" className="" />
+                                <Image src={`/ my / vote - character / character - lv${level}.png`} width={104} height={135} alt="vote-character" className="" />
                             </div>
                         </div>
                         :
