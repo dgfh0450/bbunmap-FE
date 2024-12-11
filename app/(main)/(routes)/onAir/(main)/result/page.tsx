@@ -104,7 +104,7 @@ const OnAirResult = () => {
                 </div>
 
             </div>
-            <div className="w-full flex flex-col justify-start items-center  px-[15px]" >
+            <div className="w-full flex flex-col justify-start items-center  px-[15px] pb-[100px]" >
                 <p className="w-full font-semibold text-xl text-black mt-[42px] mb-[6px] ml-l">지금 빈 공간</p>
                 {
                     {
