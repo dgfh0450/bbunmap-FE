@@ -38,7 +38,7 @@ export const getPlaceDetail = <T extends '카페' | '라운지'>(buildingName: s
     }
 };
 
-export const fetchVote = async (value: number, placeName: string, session: Session | null, update: (data: any) => Promise<Session | null>): Promise<any> => {
+export const fetchVote = async (value: number, buildingName: string, placeName: string, session: Session | null, update: (data: any) => Promise<Session | null>): Promise<any> => {
     const { longitude, latitude } = await getCurrentLocation();
 
 
@@ -50,6 +50,7 @@ export const fetchVote = async (value: number, placeName: string, session: Sessi
 
     return request.post('/secured/realTime/vote', {
         voteTime: currentTimeISO,
+        buildingName: buildingName,
         placeName: placeName,
         figure: value,
         longitude: longitude,
