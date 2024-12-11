@@ -25,7 +25,6 @@ export const getOnAirPlace = (placeName: string | null, session: Session | null,
 }
 
 export const getPlaceDetail = <T extends '카페' | '라운지'>(buildingName: string | null, placeName: string | null, type: T, update?: (data: any) => Promise<Session | null>
-
 ): Promise<T extends '카페' ? TypesCafeDetail : TypesLoungeDetail> => {
     const request = new Request();
     if (!placeName || !buildingName) throw new Error('올바르지 않은 대상입니다.')
@@ -39,18 +38,19 @@ export const getPlaceDetail = <T extends '카페' | '라운지'>(buildingName: s
     }
 };
 
-export const fetchVote = async (value: number, placeName: string, session: Session | null, update: (data: any) => Promise<Session | null>): Promise<any> => {
+export const fetchVote = async (value: number, buildingName: string, placeName: string, session: Session | null, update: (data: any) => Promise<Session | null>): Promise<any> => {
     const { longitude, latitude } = await getCurrentLocation();
 
 
     if (!session) throw new LoginError('로그인이 필요합니다.');
-    const request = new Request(session);
+    const request = new Request(session, update);
 
     const currentTimeISO = getCurrentTime();
-    if (value == -1) throw new Error('값을 설정해주세요!');
+    if (value == -1) throw new Error('동그라미를 눌러 투표해주세요');
 
     return request.post('/secured/realTime/vote', {
         voteTime: currentTimeISO,
+        buildingName: buildingName,
         placeName: placeName,
         figure: value,
         longitude: longitude,

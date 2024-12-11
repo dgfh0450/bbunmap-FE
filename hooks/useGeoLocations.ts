@@ -77,7 +77,10 @@ export const getCurrentLocation = (options?: PositionOptions): Promise<ILocation
         };
 
         const handleError = (err: GeolocationPositionError) => {
-            reject(err);
+            if (err.PERMISSION_DENIED) {
+                reject(new Error("설정에서 위치정보 수집을 허용으로 변경해주세요."))
+            }
+            else reject(err);
         };
 
         const { geolocation } = navigator;
