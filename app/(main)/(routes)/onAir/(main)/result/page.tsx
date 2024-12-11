@@ -40,6 +40,7 @@ const OnAirResult = () => {
         queryFn: () => fetchOnAirPlaceList(selectedCategory, session),
         staleTime: 300000,
         refetchInterval: 300000,
+        enabled: statusSession !== 'loading'
     });
 
     const handleCategory = (e: MouseEvent<HTMLButtonElement>, type: TypesBuildingFilterType) => {

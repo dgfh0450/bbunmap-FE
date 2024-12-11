@@ -9,7 +9,7 @@ import { fetchVote } from '@/app/(main)/(routes)/onAir/fetch';
 import LoginError from '@/app/(main)/(routes)/onAir/CustomError';
 
 export default function OnAirVoteCard(data: TypesOnAirPlace) {
-    const { buildingName, floor, placeName, placeType, vote, like, result, voteAvailable } = data;
+    const { buildingName, floor, placeName, placeType, vote, like, result, voteAvailable, refetch } = data;
     const [value, setValue] = useState<number>(-1);
     const [isError, setError] = useState<{ status: boolean, message: string }>({ status: false, message: '' });
     const request = new Request();
@@ -28,8 +28,7 @@ export default function OnAirVoteCard(data: TypesOnAirPlace) {
             }, 3000);
         },
         onSuccess(data) {
-            console.log(data);
-            window.location.reload();
+            if (refetch) refetch();
         },
         throwOnError: (e) => {
             if (e instanceof LoginError) return true;
@@ -60,7 +59,7 @@ export default function OnAirVoteCard(data: TypesOnAirPlace) {
                     voteAvailable ? (value == -1 || isError.status ? 'border-[#DADADA]' : buttonColor[value]) : "text-[#676767] border-[#FFFFFF] bg-[#FFFFFF]")}
                 disabled={isError.status || !voteAvailable}
             >
-                {voteAvailable ? (isError.status ? isError.message : '투표하기') : '투표가 완료되었습니다'}
+                {voteStatus === 'pending' ? '반영 중...' : voteAvailable ? (isError.status ? isError.message : '투표하기') : '투표가 완료되었습니다'}
             </button>
         </li >
     )
