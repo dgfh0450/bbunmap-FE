@@ -92,7 +92,7 @@ const OnAirVote = () => {
                                 }
                             </div>
                             <div className="w-[104px]  flex flex-col items-center">
-                                <SpeechBubble text={levelTexts[level]} />
+                                <Image src={`/my/bubble/lv${level}-bubble.svg`} width={104} height={28} alt="vote-bubble" />
                                 <Image src={`/my/vote-character/character-lv${level}.png`} width={104} height={135} alt="vote-character" className="" />
                             </div>
                         </div>
