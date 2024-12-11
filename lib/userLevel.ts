@@ -4,7 +4,6 @@ export function calculateLevel(totalVote: number | undefined): [number, number] 
     let index = 0;
 
     for (index = 0; index < maxUserLevel; index++) {
-        console.log(index, totalVote, levelIntervals[index])
         if (totalVote >= levelIntervals[index]) {
             break;
         }
