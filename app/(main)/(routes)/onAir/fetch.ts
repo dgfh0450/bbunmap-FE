@@ -40,12 +40,14 @@ export const getPlaceDetail = <T extends '카페' | '라운지'>(buildingName: s
 
 export const fetchVote = async (value: number, buildingName: string, placeName: string, session: Session | null, update: (data: any) => Promise<Session | null>): Promise<any> => {
     if (!session) throw new LoginError('로그인이 필요합니다.');
+
+    if (value == -1) throw new Error('동그라미를 눌러 투표해주세요');
+
     const { longitude, latitude } = await getCurrentLocation();
 
     const request = new Request(session, update);
 
     const currentTimeISO = getCurrentTime();
-    if (value == -1) throw new Error('동그라미를 눌러 투표해주세요');
 
     return request.post('/secured/realTime/vote', {
         voteTime: currentTimeISO,
