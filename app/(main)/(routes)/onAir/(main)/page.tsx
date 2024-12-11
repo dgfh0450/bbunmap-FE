@@ -121,7 +121,7 @@ const OnAirVote = () => {
                         </div>
                 }
             </div>
-            <div className="w-full min-h-full bg-[#F8F8F8] rounded-t-[30px] p-[15px] ">
+            <div className="w-full min-h-full bg-[#F8F8F8] rounded-t-[30px] p-[15px] pb-[100px]">
                 <span className="text-sm font-regular text-gray-500 relative flex">
                     <button className="font-medium text-[15px] text-black mx-[6px] flex items-center"
                         onClick={handleDropDown}>
