@@ -55,10 +55,10 @@ export const ImageTitleDescription = ({
                     alt="Documents"
                 />
             </div>
-            <p className="text-[17px] font-medium overflow-hidden whitespace-nowrap text-overflow-ellipsis">
+            <p className="text-[13px] font-medium overflow-hidden whitespace-nowrap text-overflow-ellipsis">
                 {title}
             </p>
-            <p className="font-regular text-[#A0A4A8]">
+            <p className="text-[10px] font-regular text-[#A0A4A8]">
                 {description}
             </p>
         </div>
