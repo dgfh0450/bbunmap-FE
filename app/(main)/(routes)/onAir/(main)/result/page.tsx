@@ -26,6 +26,7 @@ import { LoadingComponent, RefetchComponent } from "@/app/(main)/_components/fet
 import { getUserInfo } from "../../../my/fetch";
 import { calculateLevel } from "@/lib/userLevel";
 import OnAirNight from "@/app/(main)/_components/onair/onair-night";
+import OnAirTimeInfoModal from "@/app/(main)/_components/onair/onair-timeinfo-modal";
 
 const OnAirResult = () => {
     const [selectedCategory, setSelectedCategory] = useState<TypesBuildingFilter | undefined>();
@@ -137,31 +138,10 @@ const OnAirResult = () => {
                         }[status]
                 }
             </div>
-            <FullModal isOpen={modalOpenInfo}>
-                <div className="text-[19px] w-full max-w-[450px] min-h-[400px] mx-4 p-4 bg-white rounded-[10px]">
-                    <div className="flex justify-end mb-4">
-                        <button onClick={handleModalOpen}><Close width={30} height={30} fill="#000000" /></button>
-                    </div>
-                    :
-                    <div className="w-full flex flex-col justify-start items-center  px-[15px]" >
-                        <p className="w-full font-semibold text-xl text-black mt-[42px] mb-[6px] ml-l">지금 빈 공간</p>
-                        <button
-                            onClick={handleModalOpen}
-                            className="w-full bg-[#F3F4F5] rounded-lg flex justify-between p-[10px] mt-[5px] font-regular text-gray-500 text-xs">
-                            <span className="flex items-center"><Clock className="m-[3px]" />{response?.closestResetTime}부터 현재까지 집계된 결과에요</span> <DotMenu />
-                        </button>
-                        <ul className="w-full">
-                            {
-                                response && response.specificUserRealTimeDTOArr.map((data: TypesOnAirPlace, index: number) => {
-                                    return (
-                                        <li key={`onair-place-card-${index}`} className="mt-3"><OnAirPlaceCard {...data} /></li>
-                                    )
-                                })
-                            }
-                        </ul>
-                    </div>
-                </div>
-            </FullModal>
+            <OnAirTimeInfoModal
+                modalOpen={modalOpenInfo}
+                handleModalOpen={handleModalOpen}
+            />
         </div>
     );
 };
