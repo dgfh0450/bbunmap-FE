@@ -23,11 +23,18 @@ import Moon from '@/public/onAir/Moon.svg';
 import Connector from '@/public/onAir/connector.svg';
 import { buildingList, typeList } from "../../fetch";
 import { LoadingComponent, RefetchComponent } from "@/app/(main)/_components/fetch-component";
+import { getUserInfo } from "../../../my/fetch";
+import { calculateLevel } from "@/lib/userLevel";
 
 const OnAirResult = () => {
     const [selectedCategory, setSelectedCategory] = useState<TypesBuildingFilter | undefined>();
     const [modalOpenInfo, setModalOpenInfo] = useState<boolean>(false);
     const { update, data: session, status: statusSession } = useSession();
+    const { data: userInfo, status: statusUserInfo, error: errorUserInfo } = useQuery({
+        queryKey: ['userInfo'],
+        queryFn: () => getUserInfo(session, update),
+        enabled: statusSession === 'authenticated'
+    })
     const { data: response, error, status, refetch } = useQuery<TypeResponseOnAirPlace>({
         queryKey: ['buildingCategory', selectedCategory],
         queryFn: () => fetchOnAirPlaceList(selectedCategory, session),
@@ -45,11 +52,13 @@ const OnAirResult = () => {
         setModalOpenInfo(!modalOpenInfo);
     }
 
+
+    const [level, remain] = calculateLevel(userInfo?.numOfRealTimeVote);
     return (
         <div className="w-full flex-1 overflow-y-scroll scrollbar-hide relative">
             <div className="w-auto flex flex-row items-center justify-between mx-4  px-[15px]">
                 <p className="font-semibold text-xl">지금 이곳에 있는<br />학생들의 답변이에요!</p>
-                <Image src='/onAir/result_header.svg' width={92} height={92} alt="vote header" />
+                <Image src={`/my/result-face/face-lv${level}.png`} width={120} height={120} alt="vote face" />
             </div>
             <div className="border-b-[6px] border-gray-50 bg-white px-5 py-[14px]">
                 <div className="w-full flex flex-col justify-start items-center pb-[14px]" >
