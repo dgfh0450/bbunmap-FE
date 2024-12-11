@@ -171,12 +171,10 @@ const OnAirVote = () => {
                         3초 만에 카카오 로그인</button>
                 </div>
             </FullModal>
-            {
-                modalOpenInfo && <OnAirTimeInfoModal
-                    modalOpen={modalOpenInfo}
-                    handleModalOpen={handleInfoModalOpen}
-                />
-            }
+            <OnAirTimeInfoModal
+                modalOpen={modalOpenInfo}
+                handleModalOpen={handleInfoModalOpen}
+            />
         </div >
     );
 };
