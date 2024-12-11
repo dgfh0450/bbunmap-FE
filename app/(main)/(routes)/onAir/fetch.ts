@@ -39,10 +39,9 @@ export const getPlaceDetail = <T extends '카페' | '라운지'>(buildingName: s
 };
 
 export const fetchVote = async (value: number, buildingName: string, placeName: string, session: Session | null, update: (data: any) => Promise<Session | null>): Promise<any> => {
+    if (!session) throw new LoginError('로그인이 필요합니다.');
     const { longitude, latitude } = await getCurrentLocation();
 
-
-    if (!session) throw new LoginError('로그인이 필요합니다.');
     const request = new Request(session, update);
 
     const currentTimeISO = getCurrentTime();

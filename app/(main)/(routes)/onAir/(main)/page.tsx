@@ -135,7 +135,7 @@ const OnAirVote = () => {
                         'success':
                             <ul>
                                 {response && response.specificUserRealTimeDTOArr.map((data, idx) =>
-                                    <OnAirVoteCard {...data} key={idx} />
+                                    <OnAirVoteCard refetch={refetch} {...data} key={idx} />
                                 )}
                             </ul>,
                         'pending': <LoadingComponent message="투표 목록을 불러오고 있어요" />

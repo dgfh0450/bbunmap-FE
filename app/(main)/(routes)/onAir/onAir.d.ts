@@ -14,6 +14,7 @@ export type TypesOnAirPlace = {
     result: number;
     like: boolean;
     voteAvailable: boolean;
+    refetch?: (options?: RefetchOptions) => Promise<QueryObserverResult<T, Error>>;
 }
 
 export type TypesBuildingFilterType = 'buildingName' | 'type';
