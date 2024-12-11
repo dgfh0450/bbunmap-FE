@@ -89,7 +89,7 @@ const MyPage = () => {
                             <p className="text-[13px] text-gray-600">실시간 투표 {userInfo.numOfRealTimeVote}회 참여</p>
                         </div>
                     </div>
-                    <Link href='https://google.com' className="h-[35px] bg-point px-[11px] py-[7px] rounded-[7px] text-[14px] font-bold text-white">투표로 레벨업</Link>
+                    <Link href='/onAir' className="h-[35px] bg-point px-[11px] py-[7px] rounded-[7px] text-[14px] font-bold text-white">투표로 레벨업</Link>
                 </div>
                 <div>
                     <MyPageMenu link="https://www.notion.so/FUN-07e34afb8ae844cd9323b49b913b6971?pvs=4">
