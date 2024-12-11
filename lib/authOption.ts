@@ -35,7 +35,7 @@ const authOptions: NextAuthOptions = {
                 const { accessToken, refreshToken } = response;
                 user.accessToken = accessToken;
                 user.refreshToken = refreshToken;
-                return false;
+                return true;
             } catch (err) {
                 console.error("Sign-in error:", err);
                 return false;
