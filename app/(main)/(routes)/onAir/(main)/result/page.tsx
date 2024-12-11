@@ -28,11 +28,13 @@ const OnAirResult = () => {
     const [selectedCategory, setSelectedCategory] = useState<TypesBuildingFilter | undefined>();
     const [modalOpenInfo, setModalOpenInfo] = useState<boolean>(false);
     const { update, data: session, status: statusSession } = useSession();
+
     const { data: response, error, status, refetch } = useQuery<TypeResponseOnAirPlace>({
         queryKey: ['buildingCategory', selectedCategory],
         queryFn: () => fetchOnAirPlaceList(selectedCategory, session),
         staleTime: 300000,
         refetchInterval: 300000,
+        enabled: statusSession !== 'loading'
     });
 
     const handleCategory = (e: MouseEvent<HTMLButtonElement>, type: TypesBuildingFilterType) => {

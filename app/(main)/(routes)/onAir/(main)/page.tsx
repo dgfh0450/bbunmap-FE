@@ -29,6 +29,7 @@ const OnAirVote = () => {
         queryFn: () => fetchOnAirPlaceList(selectedCategory, session, update),
         staleTime: 300000,
         refetchInterval: 300000,
+        enabled: statusSession !== 'loading'
     });
 
     const handleDropDown = () => {
