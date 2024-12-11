@@ -11,6 +11,9 @@ const authOptions: NextAuthOptions = {
             clientSecret: process.env.KAKAO_CLIENT_SECRET ?? "",
         }),
     ],
+    pages: {
+        error: '/error'
+    },
     callbacks: {
         async signIn({ user, account }: { user: User; account: Account | null }): Promise<boolean> {
             if (!account) {
