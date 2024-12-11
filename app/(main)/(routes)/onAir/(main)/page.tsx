@@ -19,12 +19,15 @@ import { LoadingComponent, RefetchComponent } from "@/app/(main)/_components/fet
 import { getUserInfo } from "../../my/fetch";
 import { calculateLevel, levelIntervals, levelTexts, maxUserLevel } from "@/lib/userLevel";
 import SpeechBubble from "@/app/(main)/_components/onair/vote/SpeechBubble";
+import OnAirNight from "@/app/(main)/_components/onair/onair-night";
+import OnAirTimeInfoModal from "@/app/(main)/_components/onair/onair-timeinfo-modal";
 
 
 const OnAirVote = () => {
     const [selectedCategory, setSelectedCategory] = useState<TypesBuildingFilter | undefined>();
     const [dropDownOpen, setDropDownOpen] = useState<boolean>(false);
     const [modalOpenLogin, setModalOpenLogin] = useState<boolean>(false);
+    const [modalOpenInfo, setModalOpenInfo] = useState<boolean>(false);
     const { update, data: session, status: statusSession } = useSession();
     const { data: userInfo, status: statusUserInfo, error: errorUserInfo } = useQuery({
         queryKey: ['userInfo'],
@@ -48,6 +51,9 @@ const OnAirVote = () => {
         setModalOpenLogin(!modalOpenLogin);
     }
 
+    const handleInfoModalOpen = () => {
+        setModalOpenInfo(!modalOpenInfo);
+    }
 
     const handleCategory = (filter: TypesBuildingFilter | undefined) => {
         setSelectedCategory(filter)
@@ -132,16 +138,21 @@ const OnAirVote = () => {
                     {dropDownOpen && <CustomDropDown onSelect={handleCategory} />}
                 </span>
                 {
-                    {
-                        'error': <RefetchComponent message="투표 가능한 목록을 불러오지 못했어요" refetch={refetch} />,
-                        'success':
-                            <ul>
-                                {response && response.specificUserRealTimeDTOArr.map((data, idx) =>
-                                    <OnAirVoteCard refetch={refetch} {...data} key={idx} />
-                                )}
-                            </ul>,
-                        'pending': <LoadingComponent message="투표 목록을 불러오고 있어요" />
-                    }[status]
+                    response?.closestResetTime === 'none' ?
+                        <div className="flex flex-col  items-center mt-2">
+                            <OnAirNight handleModalOpen={handleInfoModalOpen} />
+                        </div> :
+
+                        {
+                            'error': <RefetchComponent message="투표 가능한 목록을 불러오지 못했어요" refetch={refetch} />,
+                            'success':
+                                <ul>
+                                    {response && response.specificUserRealTimeDTOArr.map((data, idx) =>
+                                        <OnAirVoteCard refetch={refetch} {...data} key={idx} />
+                                    )}
+                                </ul>,
+                            'pending': <LoadingComponent message="투표 목록을 불러오고 있어요" />
+                        }[status]
                 }
             </div >
             <FullModal isOpen={modalOpenLogin}>
@@ -160,6 +171,12 @@ const OnAirVote = () => {
                         3초 만에 카카오 로그인</button>
                 </div>
             </FullModal>
+            {
+                modalOpenInfo && <OnAirTimeInfoModal
+                    modalOpen={modalOpenInfo}
+                    handleModalOpen={handleInfoModalOpen}
+                />
+            }
         </div >
     );
 };
