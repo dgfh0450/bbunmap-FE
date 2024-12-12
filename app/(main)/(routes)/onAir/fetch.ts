@@ -1,5 +1,5 @@
 import { Session } from "next-auth";
-import { TypeResponseOnAirPlace, TypesBuildingFilter, TypesCafeDetail, TypesOnAirPlace, TypesLoungeDetail } from './onAir.d';
+import { TypeResponseOnAirPlace, TypesBuildingFilter, TypesCafeDetail, TypesOnAirPlace, TypesLoungeDetail, TypeResponseOnAirVotePlaceList } from './onAir.d';
 import Request from "@/lib/fetch";
 import LoginError from "./CustomError";
 import { getCurrentLocation } from "@/hooks/useGeoLocations";
@@ -15,6 +15,20 @@ export const fetchOnAirPlaceList = (filterType: TypesBuildingFilter | undefined,
         return request.get(`/api/realTime/places?${filterType.type}=${filterType.value}`);
     }
 };
+
+
+export const getOnAirVotePlaceList = (filterType: TypesBuildingFilter | undefined, session: Session | null, update?: (data: any) => Promise<Session | null>
+): Promise<TypeResponseOnAirVotePlaceList> => {
+    const request = new Request(session, update);
+    if (filterType === undefined) {
+        return request.get('/api/realTime/votePlaces');
+    }
+    else {
+        return request.get(`/api/realTime/votePlaces?${filterType.type}=${filterType.value}`);
+    }
+};
+
+
 
 export const getOnAirPlace = (placeName: string | null, session: Session | null, update?: (data: any) => Promise<Session | null>
 ): Promise<TypesOnAirPlace> => {
