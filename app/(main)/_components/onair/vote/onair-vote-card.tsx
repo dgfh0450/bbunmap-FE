@@ -1,4 +1,4 @@
-import { TypesOnAirPlace } from '@/app/(main)/(routes)/onAir/onAir';
+import { TypesOnAirPlace, TypesOnAirVotePlace } from '@/app/(main)/(routes)/onAir/onAir';
 import Request from '@/lib/fetch';
 import { cn } from '@/lib/utils'
 import { UseMutateFunction, useMutation } from '@tanstack/react-query';
@@ -8,8 +8,8 @@ import { useSession } from 'next-auth/react';
 import { fetchVote } from '@/app/(main)/(routes)/onAir/fetch';
 import LoginError from '@/app/(main)/(routes)/onAir/CustomError';
 
-export default function OnAirVoteCard(data: TypesOnAirPlace) {
-    const { buildingName, floor, placeName, placeType, vote, like, result, voteAvailable, refetch } = data;
+export default function OnAirVoteCard(data: TypesOnAirVotePlace) {
+    const { buildingName, floor, placeName, voteAvailable } = data;
     const [value, setValue] = useState<number>(-1);
     const [isError, setError] = useState<{ status: boolean, message: string }>({ status: false, message: '' });
     const request = new Request();
@@ -28,7 +28,7 @@ export default function OnAirVoteCard(data: TypesOnAirPlace) {
             }, 3000);
         },
         onSuccess(data) {
-            if (refetch) refetch();
+            // if (refetch) refetch();
         },
         throwOnError: (e) => {
             if (e instanceof LoginError) return true;

@@ -5,6 +5,20 @@ export type TypeResponseOnAirPlace = {
     specificUserRealTimeDTOArr: TypesOnAirPlace[];
 }
 
+export type TypeResponseOnAirVotePlaceList = {
+    closestResetTime: string;
+    voteTabInfoDtos: TypesOnAirVotePlace[];
+}
+
+export type TypesOnAirVotePlace = {
+    buildingName: string;
+    floor: string;
+    placeName: string;
+    like: boolean;
+    voteAvailable: boolean;
+}
+
+
 export type TypesOnAirPlace = {
     buildingName: string;
     floor: string;

@@ -4,11 +4,11 @@ import React, { useEffect, MouseEvent, useState } from "react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Request from "@/lib/fetch";
-import { TypeResponseOnAirPlace, TypesBuildingFilter, TypesOnAirPlace } from "../onAir";
+import { TypeResponseOnAirPlace, TypeResponseOnAirVotePlaceList, TypesBuildingFilter, TypesOnAirPlace } from "../onAir";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import OnAirVoteCard from "../../../_components/onair/vote/onair-vote-card";
 import { signIn, useSession, } from "next-auth/react";
-import { fetchOnAirPlaceList } from "../fetch";
+import { fetchOnAirPlaceList, getOnAirVotePlaceList } from "../fetch";
 import CustomDropDown from "@/app/(main)/_components/onair/vote/custom-dropdown";
 import Triangle from '@/public/rounded-triangle.svg';
 import Arrow from '@/public/Arrow.svg';
@@ -35,9 +35,9 @@ const OnAirVote = () => {
         enabled: statusSession === 'authenticated'
     })
 
-    const { data: response, error, status: status, refetch } = useQuery<TypeResponseOnAirPlace>({
-        queryKey: ['buildingCategory', selectedCategory?.value],
-        queryFn: () => fetchOnAirPlaceList(selectedCategory, session, update),
+    const { data: response, error, status: status, refetch } = useQuery<TypeResponseOnAirVotePlaceList>({
+        queryKey: ['votePlace', 'buildingCategory', selectedCategory?.value],
+        queryFn: () => getOnAirVotePlaceList(selectedCategory, session, update),
         staleTime: 300000,
         refetchInterval: 300000,
         enabled: statusSession !== 'loading'
@@ -98,7 +98,7 @@ const OnAirVote = () => {
                                 }
                             </div>
                             <div className="w-[104px]  flex flex-col items-center">
-                                <Image src={`/my/bubble/lv${level}-bubble.svg`} width={104} height={28} alt="vote-bubble" />
+                                <Image src={`/my/bubbles/lv${level}-bubble.svg`} width={104} height={28} alt="vote-bubble" />
                                 <Image src={`/my/vote-character/character-lv${level}.png`} width={104} height={135} alt="vote-character" className="" />
                             </div>
                         </div>
@@ -147,8 +147,8 @@ const OnAirVote = () => {
                             'error': <RefetchComponent message="투표 가능한 목록을 불러오지 못했어요" refetch={refetch} />,
                             'success':
                                 <ul>
-                                    {response && response.specificUserRealTimeDTOArr.map((data, idx) =>
-                                        <OnAirVoteCard refetch={refetch} {...data} key={idx} />
+                                    {response && response.voteTabInfoDtos.map((data, idx) =>
+                                        <OnAirVoteCard {...data} key={idx} />
                                     )}
                                 </ul>,
                             'pending': <LoadingComponent message="투표 목록을 불러오고 있어요" />

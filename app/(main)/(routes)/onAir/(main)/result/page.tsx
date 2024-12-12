@@ -40,7 +40,7 @@ const OnAirResult = () => {
     const { data: response, error, status, refetch } = useQuery<TypeResponseOnAirPlace>({
         queryKey: ['buildingCategory', selectedCategory],
         queryFn: () => fetchOnAirPlaceList(selectedCategory, session),
-        staleTime: 300000,
+        staleTime: 0,
         refetchInterval: 300000,
         enabled: statusSession !== 'loading'
     });
