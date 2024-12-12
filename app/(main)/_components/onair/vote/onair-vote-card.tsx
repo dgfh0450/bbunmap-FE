@@ -29,6 +29,7 @@ export default function OnAirVoteCard(data: TypesOnAirVotePlace) {
         },
         onSuccess(data) {
             // if (refetch) refetch();
+            window.location.reload();
         },
         throwOnError: (e) => {
             if (e instanceof LoginError) return true;
