@@ -59,7 +59,7 @@ const MyPage = () => {
                     <MyPageMenu link="https://www.notion.so/FUN-07e34afb8ae844cd9323b49b913b6971?pvs=4">
                         <span className="ml-[10px]">뻔맵이 뭐예요?</span>
                     </MyPageMenu>
-                    <MyPageMenu link="https://nebulasw.notion.site/PWA-1136841d652b4c95a6e5414aa1828418">
+                    <MyPageMenu link="https://handy-sidecar-68b.notion.site/bunnmap-pwa?pvs=4">
                         <span className="ml-[10px]">뻔맵 앱 다운로드 방법</span>
                     </MyPageMenu>
                     <MyPageMenu link="https://www.instagram.com/bbun.map/">
