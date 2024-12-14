@@ -80,6 +80,9 @@ export const getCurrentLocation = (options?: PositionOptions): Promise<ILocation
             if (err.PERMISSION_DENIED) {
                 reject(new Error("설정에서 위치정보 수집을 허용해주세요."))
             }
+            else if (err.TIMEOUT) {
+                reject(new Error("위치 정보를 가져오는데 실패하였습니다."))
+            }
             else reject(err);
         };
 
@@ -89,6 +92,16 @@ export const getCurrentLocation = (options?: PositionOptions): Promise<ILocation
             return;
         }
 
-        geolocation.getCurrentPosition(handleSuccess, handleError, options);
+        // 위치 조회로 인해 무한 대기가 발생한다 생각하여 Timeout 설정
+        // 정확도 향상 및 캐시 비사용
+        const defaultOptions: PositionOptions = {
+            timeout: 10000,
+            enableHighAccuracy: true,
+            maximumAge: 0,
+        }
+
+        geolocation.getCurrentPosition(handleSuccess, handleError, {
+            ...defaultOptions, ...options
+        });
     });
 };
