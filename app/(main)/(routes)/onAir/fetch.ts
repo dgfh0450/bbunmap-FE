@@ -1,5 +1,5 @@
 import { Session } from "next-auth";
-import { TypeResponseOnAirPlace, TypesBuildingFilter, TypesCafeDetail, TypesOnAirPlace, TypesLoungeDetail, TypeResponseOnAirVotePlaceList } from './onAir.d';
+import { TypeResponseOnAirPlace, TypesBuildingFilter, TypesCafeDetail, TypesOnAirPlace, TypesLoungeDetail, TypeResponseOnAirVotePlaceList, TypeResponseLikePlace } from './onAir.d';
 import Request from "@/lib/fetch";
 import LoginError from "./CustomError";
 import { getCurrentLocation } from "@/hooks/useGeoLocations";
@@ -74,10 +74,9 @@ export const fetchVote = async (value: number, buildingName: string, placeName: 
 }
 
 export const fetchLike = (placeName: string, session: Session | null, update: (data: any) => Promise<Session | null>
-): Promise<boolean> => {
+): Promise<TypeResponseLikePlace> => {
     if (!session) throw new LoginError('로그인이 필요합니다.');
     const request = new Request(session, update);
-    console.log(placeName);
     return request.post(`/secured/user/favoritePlace?place=${placeName}`);
 }
 
