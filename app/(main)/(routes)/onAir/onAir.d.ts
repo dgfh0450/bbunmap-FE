@@ -10,6 +10,10 @@ export type TypeResponseOnAirVotePlaceList = {
     voteTabInfoDtos: TypesOnAirVotePlace[];
 }
 
+export type TypeResponseLikePlace = {
+    addPlace: boolean;
+}
+
 export type TypesOnAirVotePlace = {
     buildingName: string;
     floor: string;
