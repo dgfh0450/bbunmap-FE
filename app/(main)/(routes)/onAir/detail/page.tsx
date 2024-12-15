@@ -71,7 +71,7 @@ export default function OnAirResultDetail() {
             const like = place.like;
             setIsLike(like);
         }
-    }, [])
+    }, [place])
 
     if (statusPlace == 'error' || statusDetail == 'error') throw new Error('Not Found')
     if (statusPlace == 'pending' || statusDetail == 'pending') return <DetailSkeleton />
