@@ -1,5 +1,5 @@
 "use client"
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { TypesOnAirPlace } from '../onAir';
@@ -28,6 +28,7 @@ export default function OnAirResultDetail() {
     const params = useSearchParams();
     const queryPlace = params.get("place");
     const { update, status: statusSession, data: session } = useSession();
+    const [isLike, setIsLike] = useState<boolean>(false);
 
     const { status: statusPlace, data: place, error, refetch } = useQuery({
         queryKey: [queryPlace],
@@ -50,8 +51,11 @@ export default function OnAirResultDetail() {
 
     const { data: responseLike, error: errorLike, status: statusLike, mutate } = useMutation({
         mutationFn: () => fetchLike(placeName, session, update),
-        onSuccess: () => {
-            refetch();
+        onSuccess: (data) => {
+            setIsLike(data.addPlace);
+        },
+        onError: (e) => {
+            console.log(e);
         },
         throwOnError: (e) => {
             if (e instanceof LoginError) return true;
@@ -59,10 +63,21 @@ export default function OnAirResultDetail() {
         }
     })
 
+    useEffect(() => {
+        if (!place) {
+            setIsLike(false);
+        }
+        else {
+            const like = place.like;
+            setIsLike(like);
+        }
+    }, [])
+
     if (statusPlace == 'error' || statusDetail == 'error') throw new Error('Not Found')
     if (statusPlace == 'pending' || statusDetail == 'pending') return <DetailSkeleton />
 
     const { buildingName, floor, placeName, placeType, vote, result, like, voteAvailable } = place;
+
 
     return (
         <div className='w-full max-w-[450px] h-full py-[51px] relative flex flex-col justify-start'>
@@ -70,7 +85,7 @@ export default function OnAirResultDetail() {
                 <div className='flex flex-row justify-between mb-5'>
                     <Link href={'/onAir/result'}><Arrow stroke='#000000' width={12} height={22.5} strokeWidth={0.6} className=' rotate-180 translate-x-[20%]' /></Link>
                     <button className='' onClick={() => mutate()}>
-                        {like ?
+                        {isLike ?
                             <Star /> :
                             <StarNone />
                         }
