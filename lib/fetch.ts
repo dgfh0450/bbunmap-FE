@@ -20,7 +20,6 @@ export default class Request {
             authorization = 'Bearer '
         else
             authorization = `Bearer ${token}`;
-        console.log(authorization);
         const url = process.env.NEXT_PUBLIC_API_SERVER_MAIN_URL + path;
         const newHeader = {
             Authorization: authorization,
